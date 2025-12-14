@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kindora — Member Profile</title>
+    <style>
+        /* theme tokens (kept same look) */
+        :root{
+          --soft-yellow:#f7e99a;--teal:#1f6a63;--muted:#5b6b63;--card:#fff5d6;--bg:#fffdf7;
+          --rounded:14px;--shadow-soft:0 8px 40px rgba(0,0,0,0.06);--input-radius:10px;--err:#d9534f;--font-sans:"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+        a{color:inherit;text-decoration:none}
+        .container{max-width:100%;margin:20px auto;padding:0 16px}
+        .site-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .header-left{display:flex;align-items:center;gap:12px}
+        .hamburger{width:44px;height:38px;border-radius:10px;border:0;background:var(--teal);display:flex;flex-direction:column;justify-content:center;padding:6px;color:#fff;cursor:pointer}
+        .bar{height:3px;background:#fff;border-radius:3px;margin:2px 0}
+        .brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
+        .logo-16x9{width:90px;height:50px;border-radius:8px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+        .logo-16x9 img{width:100%;height:100%;object-fit:cover}
+        .app-title{font-weight:700;color:var(--teal);font-size:20px}
+        .profile-wrap{position:relative}
+        .profile{width:42px;height:42px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .profile-menu{position:absolute;right:0;top:54px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.12);overflow:hidden;display:none;min-width:160px}
+        .profile-menu a{display:block;padding:10px 12px;color:var(--muted);font-weight:700}
+        .mobile-menu{position:fixed;left:0;top:0;height:100vh;width:320px;max-width:86vw;background:#fff;transform:translateX(-120%);transition:transform .28s;box-shadow:6px 0 30px rgba(0,0,0,0.14);z-index:200;border-radius:0 12px 12px 0;overflow:auto;padding:16px}
+        .mobile-menu.open{transform:translateX(0)}
+        .dash-btn{display:block;padding:12px;border-radius:28px;text-align:center;color:#fff;font-weight:700;margin-bottom:10px}
+        .dash-btn.primary{background:var(--teal)} .dash-btn.secondary{background:#ffeaa8;color:var(--teal)}
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:190}.overlay.show{opacity:1;pointer-events:auto}
+        .card{background:#fff;border-radius:18px;padding:18px;margin-top:16px;box-shadow:var(--shadow-soft)}
+        .banner{background:var(--soft-yellow);border-radius:12px;padding:22px 18px;text-align:center;margin-bottom:10px}
+        .banner h1{margin:0;font-size:34px;color:var(--teal);font-weight:800}.banner p{margin:10px 0 0;color:var(--muted);font-weight:600}
+        .form-section{margin-top:12px}.section-title{font-weight:800;color:var(--teal);text-align:center;margin:18px 0 6px;font-size:30px}.section-label{font-weight:800;color:var(--teal);margin-bottom:8px;display:block;gap:8px;font-size:16px}
+        .full-input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6e4d8;background:transparent;font-size:16px}
+        .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.input,.select,.time{flex:1;padding:10px;border-radius:var(--input-radius);border:1px solid #e6e4d8;background:transparent;font-size:15px}
+        .input::placeholder{color:#9aa39c}.small{flex:0 0 48%}.select{flex:0 0 48%}
+        .locations{margin-top:6px}.location-group{margin-bottom:18px;padding-bottom:10px;border-bottom:1px dashed rgba(0,0,0,0.04)}.loc-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}.loc-small{flex:0 0 48%}
+        .latlng-row{display:flex;gap:10px;margin-top:6px;align-items:center}.use-loc-btn{background:var(--teal);color:#fff;padding:8px 14px;border-radius:12px;border:0;font-weight:700;cursor:pointer}
+        .add-item{display:inline-block;color:var(--teal);font-weight:700;margin-top:6px;cursor:pointer;border:0;background:transparent}
+        .time-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.time.small{flex:0 0 48%}
+        .distance{width:100%;padding:12px;border-radius:12px;border:1px solid #e6e4d8;background:transparent;font-size:16px}
+        .donation-types{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}.don-card{background:#f7f7f4;border-radius:12px;padding:14px 18px;min-width:120px;text-align:center;border:2px solid transparent;cursor:pointer;display:flex;align-items:center;gap:10px;justify-content:center;font-weight:800}.don-card.selected{background:var(--teal);color:#fff}
+        .submit-wrap{text-align:center;margin-top:20px}.btn-submit{background:var(--teal);color:#fff;padding:14px 28px;border-radius:28px;border:0;font-weight:800;font-size:20px;box-shadow:0 8px 18px rgba(0,0,0,0.12);cursor:pointer}
+        .field-error{border-color:var(--err) !important;box-shadow:0 0 0 3px rgba(217,83,79,0.06) !important}.err-msg{color:var(--err);font-size:13px;margin-top:6px}
+        .thanks-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);z-index:300;min-width:280px;max-width:90vw;display:none;text-align:center}.thanks-modal.show{display:block}
+        @media (max-width:520px){ .container{padding:0 12px} .banner h1{font-size:28px} .small{flex:0 0 48%} }
+    </style>
+</head>
+<body>
+<div id="overlay" class="overlay" aria-hidden="true"></div>
+
+<aside id="mobile-menu" class="mobile-menu" aria-hidden="true" aria-label="Dashboard menu">
+    <div class="mobile-header"><strong>Menu</strong><button id="mobile-close" aria-label="Close menu" style="font-size:20px;background:none;border:0;cursor:pointer">✕</button></div>
+    <div style="padding:12px"><a class="dash-btn primary" href="membersdashboard.html">Member Dashboard</a><a class="dash-btn secondary" href="donardashboard.html">Donor Dashboard</a></div>
+</aside>
+
+<div class="container">
+    <header class="site-header" role="banner" aria-label="Top">
+        <div class="header-left">
+            <button id="hamburger" class="hamburger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <div class="brand" role="img" aria-label="Kindora logo"><div class="logo-16x9"><img src="logo2.jpg" alt="Kindora logo"></div><div class="app-title">Kindora</div></div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px">
+            <div class="profile-wrap">
+                <div id="profileBtn" class="profile" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="User menu">A</div>
+                <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
+                    <a href="#" id="viewProfile" role="menuitem">Profile</a>
+
+                    <a href="#" id="logoutBtn" role="menuitem">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="card" role="main" aria-labelledby="welcomeTitle">
+        <div class="banner" role="region" aria-label="Welcome"><h1 id="welcomeTitle">Welcome</h1><p>Helping hands like yours change the world</p></div>
+
+        <h2 class="section-title">Profile</h2>
+
+        <form id="profileForm" novalidate>
+            <div class="form-section">
+                <label class="section-label">Name <span class="req" aria-hidden="true">*</span></label>
+                <input type="text" name="fullName" id="fullName" class="full-input" placeholder="Name" required aria-required="true">
+                <div id="nameErr" class="err-msg" style="display:none">Please enter your name.</div>
+            </div>
+
+            <div class="form-section row" style="margin-top:10px">
+                <div style="flex:0 0 48%"><label class="section-label">Age <span class="req" aria-hidden="true">*</span></label><input type="number" name="age" id="age" class="input" placeholder="Age" min="18" required aria-required="true"><div id="ageErr" class="err-msg" style="display:none">Please enter your age.</div></div>
+                <div style="flex:0 0 48%"><label class="section-label">Gender <span class="req" aria-hidden="true">*</span></label><select name="gender" id="gender" class="select" required aria-required="true"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select><div id="genderErr" class="err-msg" style="display:none">Please select gender.</div></div>
+            </div>
+
+            <div class="form-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <label class="section-label" style="margin:0;">Available locations <span class="req">*</span></label>
+                    <button type="button" id="useLocation" class="use-loc-btn" aria-label="Use my location">Use location</button>
+                </div>
+
+                <div class="locations" id="locations">
+                    <div class="location-group" data-first="true">
+                        <div class="loc-row">
+                            <input type="text" name="pincode" class="input loc-small" placeholder="Pincode" required aria-required="true">
+                            <input type="text" name="state" class="input loc-small" placeholder="State" required aria-required="true">
+                        </div>
+                        <div class="loc-row">
+                            <input type="text" name="street" class="input" placeholder="Street / Area" required aria-required="true" style="flex:1">
+                            <input type="text" name="district" class="input loc-small" placeholder="District" required aria-required="true" style="flex:0 0 30%">
+                        </div>
+                        <div class="loc-row">
+                            <input type="text" name="landmark" class="input" placeholder="Landmark (optional)" style="flex:1">
+                            <button type="button" id="addLocation" class="add-item" style="margin-left:8px">+ Add more available</button>
+                        </div>
+                        <div class="latlng-row" aria-hidden="false">
+                            <input type="text" name="lat" id="lat" class="input" placeholder="Latitude" readonly aria-readonly="true">
+                            <input type="text" name="lng" id="lng" class="input" placeholder="Longitude" readonly aria-readonly="true">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="locErr" class="err-msg" style="display:none">Please add at least one available location (pincode, street, state).</div>
+            </div>
+
+            <div class="form-section">
+                <label class="section-label">Available time slots <span class="req" aria-hidden="true">*</span></label>
+                <div id="times" class="time-section">
+                    <div class="time-row">
+                        <input type="time" name="fromTime" class="time small" required aria-required="true">
+                        <input type="time" name="toTime" class="time small" required aria-required="true">
+                    </div>
+                </div>
+                <div style="margin-top:6px"><button type="button" id="addTime" class="add-item">+ Add more time</button></div>
+                <div id="timeErr" class="err-msg" style="display:none">Please add at least one time slot.</div>
+            </div>
+
+            <div class="form-section">
+                <label class="section-label">Maximum Distance Willing to Travel <span class="req" aria-hidden="true">*</span></label>
+                <input type="text" name="distance" id="distance" class="distance" placeholder="Distance in km (e.g. 5 km, 10 km)" required aria-required="true">
+                <div id="distanceErr" class="err-msg" style="display:none">Please state the maximum distance you're willing to travel.</div>
+            </div>
+
+            <div class="form-section">
+                <label class="section-label">What types of donations can you handle? <span class="req" aria-hidden="true">*</span></label>
+                <div class="donation-types" role="group" aria-label="Donation types">
+                    <div class="don-card" data-value="food" tabindex="0" role="button" aria-pressed="false"><span class="don-emoji">🍲</span><span>Food</span></div>
+                    <div class="don-card" data-value="clothes" tabindex="0" role="button" aria-pressed="false"><span class="don-emoji">👕</span><span>Clothes</span></div>
+                    <div class="don-card" data-value="animal" tabindex="0" role="button" aria-pressed="false"><span class="don-emoji">🐾</span><span>Animal Food</span></div>
+                </div>
+                <div id="donErr" class="err-msg" style="display:none">Please select at least one donation type.</div>
+            </div>
+
+            <div class="submit-wrap"><button type="submit" class="btn-submit">Save Profile</button></div>
+        </form>
+    </main>
+</div>
+
+<div id="thanks" class="thanks-modal" role="dialog" aria-modal="true" aria-labelledby="thanksTitle" aria-hidden="true">
+    <h3 id="thanksTitle">We updated your profile.</h3>
+    <p>Thank you for registering as a member</p>
+    <div style="margin-top:12px"><button id="thanksClose" style="background:var(--teal);color:#fff;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer">Close</button></div>
+</div>
+<!-- PROFILE MODAL (do NOT make it visible by default) -->
+<style>
+    /* small modal CSS — can be placed in your main <style> too */
+    .profile-modal__backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; z-index: 9999; }
+    .profile-modal__backdrop.show { display: flex; }
+    .profile-modal { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+    .profile-modal h2 { margin-top:0; color:var(--teal); }
+    .profile-modal p { margin:8px 0; color:#264b47; }
+</style>
+
+<div id="profileModalBackdrop" class="profile-modal__backdrop" aria-hidden="true">
+    <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">My Profile</h2>
+        <p><strong>Name:</strong> <span id="pm_name">-</span></p>
+        <p><strong>Email:</strong> <span id="pm_email">-</span></p>
+        <p><strong>Phone:</strong> <span id="pm_phone">-</span></p>
+        <p><strong>Role:</strong> <span id="pm_role">-</span></p>
+
+        <div style="text-align:right;margin-top:12px">
+            <button id="closeProfileModal" class="btn-ghost" style="padding:8px 14px;border:1px solid #ccc;border-radius:8px;cursor:pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /***** CONFIG - endpoints your backend controller provides *****/
+    const AUTH_ME = '/api/auth/me';
+    const PROFILE_API = '/api/profile'; // GET to retrieve, POST to save (MemberDto)
+
+    /***** small DOM helper *****/
+    function el(tag, attrs = {}, children = []) {
+      const n = document.createElement(tag);
+      Object.keys(attrs).forEach(k => {
+        if (k === 'class') n.className = attrs[k];
+        else if (k === 'text') n.textContent = attrs[k];
+        else n.setAttribute(k, attrs[k]);
+      });
+      (Array.isArray(children) ? children : [children]).forEach(c => {
+        if (!c) return;
+        if (typeof c === 'string') n.appendChild(document.createTextNode(c));
+        else n.appendChild(c);
+      });
+      return n;
+    }
+
+    /***** UI wiring: menu/profile (unchanged) *****/
+    (function(){
+      const hamburger = document.getElementById('hamburger'),
+            mobileMenu = document.getElementById('mobile-menu'),
+            mobileClose = document.getElementById('mobile-close'),
+            overlay = document.getElementById('overlay');
+
+      function openMenu(){ mobileMenu && mobileMenu.classList.add('open'); overlay && overlay.classList.add('show'); if (mobileMenu) mobileMenu.setAttribute('aria-hidden','false'); if (hamburger) hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; const first = mobileMenu && mobileMenu.querySelector('.dash-btn'); if(first) first.focus(); }
+      function closeMenu(){ mobileMenu && mobileMenu.classList.remove('open'); overlay && overlay.classList.remove('show'); if (mobileMenu) mobileMenu.setAttribute('aria-hidden','true'); if (hamburger) hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; hamburger && hamburger.focus(); }
+
+      if (hamburger && mobileMenu && overlay){
+        hamburger.addEventListener('click', ()=> mobileMenu.classList.contains('open') ? closeMenu() : openMenu());
+        mobileClose && mobileClose.addEventListener('click', closeMenu);
+        overlay && overlay.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', (e)=> { if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu(); });
+      }
+
+      const profileBtn = document.getElementById('profileBtn'), profileMenu = document.getElementById('profileMenu');
+      function openProfile(){ if(profileMenu){ profileMenu.style.display='block'; profileMenu.setAttribute('aria-hidden','false'); } if(profileBtn) profileBtn.setAttribute('aria-expanded','true'); }
+      function closeProfile(){ if(profileMenu){ profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); } if(profileBtn) profileBtn.setAttribute('aria-expanded','false'); }
+      if (profileBtn){
+        profileBtn.addEventListener('click', ()=> { const open = profileBtn.getAttribute('aria-expanded') === 'true'; open ? closeProfile() : openProfile(); });
+        document.addEventListener('click', (e)=> { if (!profileBtn.contains(e.target) && (!profileMenu || !profileMenu.contains(e.target))) closeProfile(); });
+      }
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.addEventListener('click', async (e) => { e.preventDefault(); try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(_){} window.location.href='/authentication.html'; });
+    })();
+// PROFILE modal logic (use class toggles)
+const viewProfile = document.getElementById("viewProfile");
+const modalBackdrop = document.getElementById("profileModalBackdrop");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+async function openProfileModalWithData() {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) return; // do nothing if not logged in
+    const user = await res.json();
+
+    document.getElementById("pm_name").textContent = user.fullName || user.name || '-';
+    document.getElementById("pm_email").textContent = user.email || user.username || '-';
+    document.getElementById("pm_phone").textContent = user.phoneNumber || user.phone || user.mobile || '-';
+    document.getElementById("pm_role").textContent = user.role || '-';
+
+    modalBackdrop.classList.add('show');
+    modalBackdrop.setAttribute('aria-hidden', 'false');
+  } catch (err) {
+    console.error('Failed to load profile', err);
+  }
+}
+
+function closeProfileModalFn() {
+  modalBackdrop.classList.remove('show');
+  modalBackdrop.setAttribute('aria-hidden', 'true');
+}
+
+// wiring
+if (viewProfile) {
+  viewProfile.addEventListener('click', function (e) {
+    e.preventDefault();
+    openProfileModalWithData();
+  });
+}
+if (closeProfileModal) closeProfileModal.addEventListener('click', closeProfileModalFn);
+
+// close when clicking on backdrop itself
+if (modalBackdrop) {
+  modalBackdrop.addEventListener('click', function (ev) {
+    if (ev.target === modalBackdrop) closeProfileModalFn();
+  });
+}
+
+    /***** Delegated add/remove location groups (robust when markup is replaced) *****/
+    (function(){
+      const locationsContainer = document.getElementById('locations');
+      if (!locationsContainer) return;
+
+      function createLocationGroup(isFirst = false, values = {}) {
+        const group = el('div',{class:'location-group'});
+        const r1 = el('div',{class:'loc-row'});
+        r1.appendChild(el('input',{type:'text', name: isFirst ? 'pincode' : 'pincode[]', class:'input loc-small', placeholder:'Pincode', value: values.pincode || ''}));
+        r1.appendChild(el('input',{type:'text', name: isFirst ? 'state' : 'state[]', class:'input loc-small', placeholder:'State', value: values.state || ''}));
+        const r2 = el('div',{class:'loc-row'});
+        r2.appendChild(el('input',{type:'text', name: isFirst ? 'street' : 'street[]', class:'input', placeholder:'Street / Area', style:'flex:1', value: values.street || ''}));
+        r2.appendChild(el('input',{type:'text', name: isFirst ? 'district' : 'district[]', class:'input loc-small', placeholder:'District', value: values.district || ''}));
+        const r3 = el('div',{class:'loc-row'});
+        const lm = el('input',{type:'text', name: isFirst ? 'landmark' : 'landmark[]', class:'input', placeholder:'Landmark (optional)', style:'flex:1', value: values.landmark || ''});
+        if (isFirst) {
+          // put an "add" control for first group (but leave it as a class, so delegation picks it up)
+          const addBtn = el('button',{type:'button', class:'add-item add-location', style:'margin-left:8px'}, '+ Add more available');
+          r3.appendChild(lm);
+          r3.appendChild(addBtn);
+        } else {
+          const rem = el('button',{type:'button', class:'add-item remove-loc', style:'margin-left:8px;color:var(--err)'}, 'Remove');
+          r3.appendChild(lm); r3.appendChild(rem);
+        }
+        group.appendChild(r1); group.appendChild(r2); group.appendChild(r3);
+
+        // lat/lng for primary (first)
+        if (isFirst) {
+          const ll = el('div',{class:'latlng-row'});
+          ll.appendChild(el('input',{type:'text', name:'lat', id:'lat', class:'input', placeholder:'Latitude', readonly:'true', value: values.lat || ''}));
+          ll.appendChild(el('input',{type:'text', name:'lng', id:'lng', class:'input', placeholder:'Longitude', readonly:'true', value: values.lng || ''}));
+          group.appendChild(ll);
+        }
+        return group;
+      }
+
+      // Single delegated listener for add/remove inside #locations
+      locationsContainer.addEventListener('click', function(e){
+        const tgt = e.target;
+        if (!tgt) return;
+
+        // Add new group (matches element with class 'add-location' or id 'addLocation')
+        if (tgt.matches && (tgt.matches('.add-location') || tgt.id === 'addLocation')) {
+          e.preventDefault();
+          const newGroup = createLocationGroup(false, {});
+          locationsContainer.appendChild(newGroup);
+          const firstInput = newGroup.querySelector('input');
+          if (firstInput) firstInput.focus();
+          return;
+        }
+
+        // Remove an existing group (matches 'remove-loc')
+        if (tgt.matches && tgt.matches('.remove-loc')) {
+          e.preventDefault();
+          const grp = tgt.closest('.location-group');
+          if (grp) grp.remove();
+          return;
+        }
+      });
+    })();
+
+    /***** geolocation for primary lat/lng (unchanged) *****/
+    (function(){
+      const btn = document.getElementById('useLocation');
+      if (!btn) return;
+      btn.addEventListener('click', function(){
+        if (!navigator.geolocation){ alert('Geolocation not supported by your browser.'); return; }
+        const orig = btn.textContent; btn.textContent = 'Detecting...'; btn.disabled = true;
+        navigator.geolocation.getCurrentPosition(pos=>{
+          const lat = pos.coords.latitude.toFixed(6), lon = pos.coords.longitude.toFixed(6);
+          const latInput = document.querySelector('#locations .location-group [name="lat"], #lat');
+          const lngInput = document.querySelector('#locations .location-group [name="lng"], #lng');
+          if (latInput) latInput.value = lat;
+          if (lngInput) lngInput.value = lon;
+          btn.textContent = 'Location detected';
+          setTimeout(()=>{ btn.textContent = orig; },1200);
+          btn.disabled = false;
+          const firstGroup = document.querySelector('#locations .location-group'); if (firstGroup) firstGroup.setAttribute('data-located','true');
+        }, err=>{
+          alert('Unable to detect location — please allow location permission or enter address manually.');
+          btn.textContent = orig; btn.disabled = false;
+        }, { timeout:15000 });
+      });
+    })();
+
+    /***** add/remove time rows (unchanged) *****/
+    (function(){
+      const addTime = document.getElementById('addTime'), timesContainer = document.getElementById('times');
+      if (!addTime || !timesContainer) return;
+      addTime.addEventListener('click', function(e){
+        e.preventDefault();
+        const container = el('div',{class:'time-row', style:'margin-top:8px'});
+        const from = el('input',{type:'time', name:'fromTime[]', class:'time small'}), to = el('input',{type:'time', name:'toTime[]', class:'time small'});
+        const remove = el('button',{type:'button', class:'add-item', style:'color:var(--err); margin-left:8px'}, 'Remove'); remove.addEventListener('click', (ev)=>{ ev.preventDefault(); container.remove(); });
+        container.appendChild(from); container.appendChild(to); container.appendChild(remove);
+        timesContainer.appendChild(container); from.focus();
+      });
+    })();
+
+    /***** donation-type toggles (unchanged) *****/
+    (function(){
+      const cards = Array.from(document.querySelectorAll('.don-card'));
+      cards.forEach(c => {
+        c.addEventListener('click', ()=> { const on = c.classList.toggle('selected'); c.setAttribute('aria-pressed', on?'true':'false'); const dErr = document.getElementById('donErr'); if (dErr) dErr.style.display='none'; });
+        c.addEventListener('keydown', (e)=> { if (e.key==='Enter' || e.key===' ') { e.preventDefault(); c.click(); } });
+      });
+    })();
+
+    /***** fetch logged-in user initial (from cookie via /api/auth/me) AND redirect to login when unauthorized *****/
+    (async function loadMeAndProfile(){
+      try {
+        const res = await fetch(AUTH_ME, { credentials:'include' });
+        if (res.status === 401 || res.status === 403) {
+          window.location.href = '/authentication.html';
+          return;
+        }
+        if (res.ok) {
+          const user = await res.json();
+          const full = user.name || user.fullName || user.full_name || user.email || '';
+          const first = (full||'').toString().trim().split(/\s+/)[0] || '';
+          const welcome = document.getElementById('welcomeTitle'); if (welcome && first) welcome.textContent = `Welcome, ${first}`;
+          const profileBtn = document.getElementById('profileBtn'); if (profileBtn) profileBtn.textContent = (first ? first.charAt(0).toUpperCase() : (user.initial || 'A'));
+        }
+      } catch (err) {
+        console.warn('Could not fetch /api/auth/me', err);
+      }
+
+      // then load actual member profile (separate endpoint)
+      try {
+        const r = await fetch(PROFILE_API, { credentials:'include' });
+        if (!r.ok) {
+          console.warn('/api/profile not ok', r.status);
+          return;
+        }
+        const member = await r.json();
+        if (member) populateFromMember(member);
+      } catch (err) {
+        console.warn('Could not fetch /api/profile', err);
+      }
+    })();
+
+    /***** populate form from Member response (matches Member entity JSON shape) *****/
+    function populateFromMember(m){
+      try {
+        // top-level fields
+        const fn = document.getElementById('fullName'); if (fn) fn.value = m.fullName || m.full_name || '';
+        const age = document.getElementById('age'); if (age && (m.age !== undefined && m.age !== null)) age.value = m.age;
+        const gender = document.getElementById('gender'); if (gender && m.gender) gender.value = m.gender;
+        const distance = document.getElementById('distance'); if (distance) distance.value = m.maxDistance || m.max_distance || m.distance || '';
+
+        // locations array (MemberLocation[]). Clear, then add each
+        const container = document.getElementById('locations');
+        if (!container) return;
+
+        container.innerHTML = ''; // remove previous nodes (delegation still active on parent)
+        if (Array.isArray(m.locations) && m.locations.length) {
+          m.locations.forEach((loc, idx) => {
+            const values = {
+              pincode: loc.pincode || '',
+              state: loc.state || '',
+              street: loc.street || '',
+              district: loc.district || '',
+              landmark: loc.landmark || '',
+              lat: loc.lat || loc.latitude || '',
+              lng: loc.lng || loc.longitude || ''
+            };
+            const g = createLocationGroupForPopulate(idx === 0, values);
+            container.appendChild(g);
+          });
+        } else {
+          // ensure at least one empty primary group exists for user to fill
+          container.appendChild(createLocationGroupForPopulate(true, {}));
+        }
+
+        // times array (MemberTime[])
+        const tcont = document.getElementById('times'); if (tcont) {
+          tcont.innerHTML = '';
+          if (Array.isArray(m.times) && m.times.length) {
+            m.times.forEach((t, idx) => {
+              const row = el('div',{class:'time-row'});
+              const from = el('input',{type:'time', name: idx===0 ? 'fromTime' : 'fromTime[]', class:'time small', value: t.time_from || t.from || ''});
+              const to = el('input',{type:'time', name: idx===0 ? 'toTime' : 'toTime[]', class:'time small', value: t.time_to || t.to || ''});
+              if (idx === 0) { row.appendChild(from); row.appendChild(to); }
+              else {
+                const rem = el('button',{type:'button', class:'add-item', style:'color:var(--err)'}, 'Remove'); rem.addEventListener('click', (e)=>{ e.preventDefault(); row.remove(); });
+                row.appendChild(from); row.appendChild(to); row.appendChild(rem);
+              }
+              tcont.appendChild(row);
+            });
+          } else {
+            // default blank time row if none
+            const row = el('div',{class:'time-row'});
+            row.appendChild(el('input',{type:'time', name:'fromTime', class:'time small'}));
+            row.appendChild(el('input',{type:'time', name:'toTime', class:'time small'}));
+            tcont.appendChild(row);
+          }
+        }
+
+        // types (MemberType[]) — data.types might be array of strings
+        document.querySelectorAll('.don-card.selected').forEach(x => x.classList.remove('selected'));
+        if (Array.isArray(m.types) && m.types.length) {
+          m.types.forEach(t => {
+            const card = document.querySelector('.don-card[data-value="'+t+'"]'); if (card) card.classList.add('selected');
+          });
+        }
+
+        // helper for building a group used above (kept local to this function)
+        function createLocationGroupForPopulate(isFirst, values){
+          // reuse the same markup shape as delegation createLocationGroup
+          const g = el('div',{class:'location-group'});
+          const r1 = el('div',{class:'loc-row'});
+          r1.appendChild(el('input',{type:'text', name: isFirst ? 'pincode' : 'pincode[]', class:'input loc-small', placeholder:'Pincode', value: values.pincode || ''}));
+          r1.appendChild(el('input',{type:'text', name: isFirst ? 'state' : 'state[]', class:'input loc-small', placeholder:'State', value: values.state || ''}));
+          const r2 = el('div',{class:'loc-row'});
+          r2.appendChild(el('input',{type:'text', name: isFirst ? 'street' : 'street[]', class:'input', placeholder:'Street / Area', style:'flex:1', value: values.street || ''}));
+          r2.appendChild(el('input',{type:'text', name: isFirst ? 'district' : 'district[]', class:'input loc-small', placeholder:'District', value: values.district || ''}));
+          const r3 = el('div',{class:'loc-row'});
+          const lm = el('input',{type:'text', name: isFirst ? 'landmark' : 'landmark[]', class:'input', placeholder:'Landmark (optional)', style:'flex:1', value: values.landmark || ''});
+          if (isFirst) {
+            const addBtn = el('button',{type:'button', class:'add-item add-location', style:'margin-left:8px'}, '+ Add more available');
+            r3.appendChild(lm); r3.appendChild(addBtn);
+          } else {
+            const rem = el('button',{type:'button', class:'add-item remove-loc', style:'margin-left:8px;color:var(--err)'}, 'Remove');
+            rem.addEventListener('click', (e)=>{ e.preventDefault(); g.remove(); });
+            r3.appendChild(lm); r3.appendChild(rem);
+          }
+          g.appendChild(r1); g.appendChild(r2); g.appendChild(r3);
+          if (isFirst) {
+            const ll = el('div',{class:'latlng-row'});
+            ll.appendChild(el('input',{type:'text', name:'lat', id:'lat', class:'input', placeholder:'Latitude', readonly:'true', value: values.lat || ''}));
+            ll.appendChild(el('input',{type:'text', name:'lng', id:'lng', class:'input', placeholder:'Longitude', readonly:'true', value: values.lng || ''}));
+            g.appendChild(ll);
+            if (values.lat && values.lng) g.setAttribute('data-located','true');
+          }
+          return g;
+        }
+
+      } catch (err) { console.warn('populateFromMember failed', err); }
+    }
+
+    /***** attempt to send draft saved in localStorage when page loads *****/
+    (function trySendDraft(){
+      try {
+        const draft = localStorage.getItem('draftProfile'); if (!draft) return;
+        const payload = JSON.parse(draft);
+        fetch(PROFILE_API, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)}).then(r => { if (r.ok) localStorage.removeItem('draftProfile'); }).catch(()=>{});
+      } catch(e){}
+    })();
+
+    /***** build MemberDto from form (unchanged) *****/
+    function buildMemberDto(form){
+      const dto = {};
+      dto.fullName = (form.querySelector('[name="fullName"]')||{}).value.trim();
+      const age = (form.querySelector('[name="age"]')||{}).value; dto.age = age ? Number(age) : null;
+      dto.gender = (form.querySelector('[name="gender"]')||{}).value || null;
+      dto.distance = (form.querySelector('[name="distance"]')||{}).value || null;
+
+      // locations
+      dto.locations = [];
+      const groups = Array.from(form.querySelectorAll('.location-group'));
+      if (groups.length){
+        groups.forEach((g, idx) => {
+          const p = (g.querySelector('[name="pincode"], [name="pincode[]"]')||{}).value || '';
+          const s = (g.querySelector('[name="street"], [name="street[]"]')||{}).value || '';
+          const st = (g.querySelector('[name="state"], [name="state[]"]')||{}).value || '';
+          const d = (g.querySelector('[name="district"], [name="district[]"]')||{}).value || '';
+          const l = (g.querySelector('[name="landmark"], [name="landmark[]"]')||{}).value || '';
+          const lat = (g.querySelector('[name="lat"], #lat')||{}).value || null;
+          const lng = (g.querySelector('[name="lng"], #lng')||{}).value || null;
+          if (p||s||st||d||l||lat||lng) dto.locations.push({
+            pincode: p||null, street: s||null, state: st||null, district: d||null, landmark: l||null,
+            lat: lat ? Number(lat) : null, lng: lng ? Number(lng) : null
+          });
+        });
+      } else {
+        const pEls = Array.from(form.querySelectorAll('[name="pincode[]"], [name="pincode"]'));
+        if (pEls.length) {
+          const sEls = Array.from(form.querySelectorAll('[name="street[]"], [name="street"]'));
+          const stEls = Array.from(form.querySelectorAll('[name="state[]"], [name="state"]'));
+          const dEls = Array.from(form.querySelectorAll('[name="district[]"], [name="district"]'));
+          const lEls = Array.from(form.querySelectorAll('[name="landmark[]"], [name="landmark"]'));
+          const max = Math.max(pEls.length, sEls.length, stEls.length, dEls.length, lEls.length);
+          for (let i=0;i<max;i++){
+            const p = (pEls[i] && pEls[i].value) ? pEls[i].value : '';
+            const s = (sEls[i] && sEls[i].value) ? sEls[i].value : '';
+            const st = (stEls[i] && stEls[i].value) ? stEls[i].value : '';
+            const d = (dEls[i] && dEls[i].value) ? dEls[i].value : '';
+            const l = (lEls[i] && lEls[i].value) ? lEls[i].value : '';
+            if (p||s||st||d||l) dto.locations.push({ pincode:p||null, street:s||null, state:st||null, district:d||null, landmark:l||null });
+          }
+        }
+      }
+
+      // times
+      dto.times = [];
+      const froms = Array.from(document.querySelectorAll('[name="fromTime"], [name="fromTime[]"]'));
+      const tos = Array.from(document.querySelectorAll('[name="toTime"], [name="toTime[]"]'));
+      for (let i=0;i<Math.max(froms.length, tos.length); i++){
+        const f = froms[i] && froms[i].value ? froms[i].value : '';
+        const t = tos[i] && tos[i].value ? tos[i].value : '';
+        if (f && t) dto.times.push({ from: f, to: t });
+      }
+
+      // types
+      dto.types = Array.from(document.querySelectorAll('.don-card.selected')).map(c => c.dataset.value);
+
+      return dto;
+    }
+
+    /***** simple client-side validation (unchanged) *****/
+    function validateDto(dto){
+      if (!dto.fullName || !dto.fullName.trim()) return { ok:false, id:'fullName', msg:'Please enter your name.' };
+      if (!dto.age || dto.age <= 0) return { ok:false, id:'age', msg:'Please enter valid age.' };
+      if (!dto.gender) return { ok:false, id:'gender', msg:'Please select your gender.' };
+      if (!dto.locations || dto.locations.length === 0) return { ok:false, id:null, msg:'Please add at least one available location.' };
+      for (let i=0;i<dto.locations.length;i++){ if (!dto.locations[i].district || !dto.locations[i].district.trim()) return { ok:false, id:null, msg:'Please enter district for each location.' }; }
+      if (!dto.times || dto.times.length === 0) return { ok:false, id:null, msg:'Please add at least one time slot.' };
+      if (!dto.distance || !dto.distance.trim()) return { ok:false, id:'distance', msg:'Please enter maximum distance.' };
+      if (!dto.types || dto.types.length === 0) return { ok:false, id:null, msg:'Please select at least one donation type.' };
+      if (dto.locations[0]) { if (!(dto.locations[0].lat && dto.locations[0].lng)) return { ok:false, id:null, msg:'Please click "Use location" to detect latitude & longitude for your primary location (required).' }; }
+      return { ok:true };
+    }
+
+    /***** send payload to backend (POST /api/profile) - unchanged *****/
+    async function sendProfile(payload){
+      try {
+        const res = await fetch(PROFILE_API, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          try { localStorage.setItem('draftProfile', JSON.stringify(payload)); } catch(e){}
+          let err = 'Server error while saving profile.';
+          try { const j = await res.json(); if (j && (j.message || j.error)) err = j.message || j.error; } catch(e){}
+          alert(err + ' (Saved locally).');
+          return false;
+        }
+        try { localStorage.removeItem('draftProfile'); } catch(e){}
+        const thanks = document.getElementById('thanks'); if (thanks){ thanks.classList.add('show'); thanks.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; const c = document.getElementById('thanksClose'); c && c.focus(); }
+        return true;
+      } catch (err) {
+        try { localStorage.setItem('draftProfile', JSON.stringify(payload)); } catch(e){}
+        alert('Network error — profile saved locally and will be retried later.');
+        return false;
+      }
+    }
+
+    /***** submit handler: validate, build DTO, send (unchanged) *****/
+    (function(){
+      const form = document.getElementById('profileForm'), thanksClose = document.getElementById('thanksClose');
+      if (thanksClose) thanksClose.addEventListener('click', ()=>{ const t=document.getElementById('thanks'); t && (t.classList.remove('show'), t.setAttribute('aria-hidden','true'), document.body.style.overflow=''); });
+
+      function showErr(el,id,msg){ if (el) el.classList.add('field-error'); const n=document.getElementById(id); if (n){ n.textContent=msg; n.style.display='block'; } }
+      function clearErr(el,id){ if (el) el && el.classList.remove('field-error'); const n=document.getElementById(id); if (n) n.style.display='none'; }
+
+      if (!form) return;
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        ['nameErr','ageErr','genderErr','locErr','timeErr','distanceErr','donErr'].forEach(id=>{ const n=document.getElementById(id); if (n) n.style.display='none'; });
+        document.querySelectorAll('.field-error').forEach(x=>x.classList.remove('field-error'));
+
+        const payload = buildMemberDto(form);
+        const v = validateDto(payload);
+        if (!v.ok) {
+          if (v.id && document.getElementById(v.id)) {
+            const el = document.getElementById(v.id);
+            el.classList.add('field-error');
+            const err = document.getElementById(v.id+'Err');
+            if (err) { err.textContent = v.msg; err.style.display = 'block'; }
+            el.focus();
+          } else {
+            alert(v.msg);
+          }
+          return;
+        }
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const prevLabel = submitBtn ? submitBtn.textContent : null;
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; }
+
+        try {
+          await sendProfile(payload);
+        } finally {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = prevLabel || 'Save Profile'; }
+        }
+      });
+    })();
+</script>
+
+</body>
+</html>

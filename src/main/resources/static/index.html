@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <!-- Website Title (shows in Google & browser tab) -->
+    <title>Kindora – Reduce Food Waste, Help the Needy</title>
+
+    <!-- Google description -->
+    <meta name="description"
+          content="Kindora is a donation platform that reduces food waste by connecting donors with volunteers to help people in need." />
+
+    <!-- Keywords (optional but good) -->
+    <meta name="keywords"
+          content="Kindora, food donation, reduce food waste, charity platform, volunteer app" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header class="site-header container">
+    <div class="header-left">
+        <button id="hamburger" class="hamburger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </button>
+
+        <div class="brand">
+            <div class="logo-16x9"><img src="logo.jpg" alt="Kindora logo"></div>
+            <span class="app-title">Kindora</span>
+        </div>
+    </div>
+
+    <!-- RIGHT NAV -->
+    <nav class="header-right" aria-label="Main navigation">
+        <a href="#" class="nav-link">Home</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#footer" class="nav-link">Contact</a>
+
+        <!-- AUTH AREA -->
+        <div id="authArea" style="display:flex;align-items:center;gap:8px">
+
+            <!-- LOGIN BUTTON (visible when NOT logged in) -->
+            <a id="loginBtn" href="authentication.html" class="btn login">Login / Register</a>
+
+            <!-- PROFILE UI (hidden until user is logged in) -->
+            <div id="profileContainer" style="display:none;position:relative;">
+                <button id="profileBtn"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-controls="profileDropdown"
+                        style="width:40px;height:40px;border-radius:50%;border:0;background:#1f6a63;color:#fff;
+                       font-weight:700;display:grid;place-items:center;cursor:pointer;">
+                    <span id="profileInitial">U</span>
+                </button>
+
+                <!-- Profile dropdown (no inline display:none) -->
+                <div id="profileDropdown" role="menu" aria-hidden="true"
+                     style="position:absolute;right:0;top:46px;background:#fff;border-radius:10px;
+                    box-shadow:0 8px 24px rgba(0,0,0,.12);padding:8px;min-width:180px;z-index:40;">
+                    <button id="viewProfile" class="dropdown-item" type="button"
+                            style="display:block;width:100%;text-align:left;padding:10px;border:none;background:transparent">
+                        Profile
+                    </button>
+                    <button id="logoutBtn" class="dropdown-item" type="button"
+                            style="display:block;width:100%;text-align:left;padding:10px;border:none;background:transparent;margin-top:6px">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- MOBILE MENU -->
+<aside id="mobile-menu" class="mobile-menu" aria-hidden="true">
+    <div class="mobile-header">
+        <h3>Menu</h3>
+        <button id="mobile-close" class="close-x" aria-label="Close menu">&times;</button>
+    </div>
+
+    <div class="mobile-body">
+        <div class="dash-buttons">
+            <a href="membersdashboard.html" class="dash-btn primary" data-protected="true">Member Dashboard</a>
+            <a href="donardashboard.html" class="dash-btn secondary" data-protected="true">Donor Dashboard</a>
+        </div>
+    </div>
+</aside>
+
+<div id="overlay" class="overlay" aria-hidden="true"></div>
+
+<!-- MAIN CONTENT -->
+<main>
+
+    <!-- HERO -->
+    <section class="hero container" aria-label="Hero">
+        <div class="hero-slider" id="hero-slider">
+            <div class="slide active" style="background-image:url('slide1.jpg')" data-index="0" role="img" aria-label="Slide 1"></div>
+            <div class="slide" style="background-image:url('slide5.jpg')" data-index="1" role="img" aria-label="Slide 2"></div>
+            <div class="slide" style="background-image:url('slide2.jpg')" data-index="2" role="img" aria-label="Slide 3"></div>
+            <div class="slide" style="background-image:url('slide3.jpg')" data-index="3" role="img" aria-label="Slide 4"></div>
+            <div class="slide" style="background-image:url('slide4.jpg')" data-index="4" role="img" aria-label="Slide 5"></div>
+        </div>
+        <div class="slider-dots" id="slider-dots"></div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features container" id="features">
+        <h2 class="section-title">What you can do with Kindora</h2>
+
+        <div class="feature-grid">
+            <article class="feature-card">
+                <img src="foodlogo.jpg" class="feature-img" alt="Food donation">
+                <div class="feature-body">
+                    <h3>Food Donation</h3><p>Donate extra food to the hungry.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-donate" data-protected="true"
+                            onclick="window.location.href='donatefood.html'">Donate</button>
+                </div>
+            </article>
+
+            <article class="feature-card">
+                <img src="clotheslogo.jpg" class="feature-img" alt="Clothes donation">
+                <div class="feature-body">
+                    <h3>Clothes Donation</h3><p>Share clothes with those in need.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-donate" data-protected="true"
+                            onclick="window.location.href='donateclothes.html'">Donate</button>
+                </div>
+            </article>
+
+            <article class="feature-card alt">
+                <img src="animallogo.jpg" class="feature-img" alt="Animal food donation">
+                <div class="feature-body">
+                    <h3>Animal Food</h3><p>Feed street animals with safe leftovers.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-donate" data-protected="true"
+                            onclick="window.location.href='donateanimalfood.html'">Donate</button>
+                </div>
+            </article>
+
+            <article class="feature-card">
+                <img src="memberslogo.jpg" class="feature-img" alt="Become a member">
+                <div class="feature-body">
+                    <h3>Become a Member</h3><p>Help pick up and deliver donations.</p>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-donate" data-protected="true"
+                            onclick="window.location.href='membersdashboard.html'">Join</button>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about container" id="about">
+        <div class="about-card">
+            <h2>About Kindora</h2>
+
+            <p>
+                Kindora is a community-driven platform built to reduce food and resource waste while ensuring help reaches the people who need it most.
+                We connect generous donors, dedicated volunteers, and vulnerable communities through a simple, transparent, and reliable system.
+            </p>
+
+            <p>
+                Every day, large amounts of food, clothes, and essential items go unused while many struggle to meet basic needs.
+                Kindora bridges this gap by enabling real-time donations and nearby volunteer support, making kindness faster and more effective.
+            </p>
+
+            <h3>Our Mission</h3>
+            <p>
+                To minimize waste, support the needy, and inspire social responsibility by making donation and delivery simple, safe, and accessible for everyone.
+            </p>
+
+            <h3>Why Kindora Matters</h3>
+            <ul class="why-list">
+                <li>Reduces food waste and environmental impact.</li>
+                <li>Delivers meals, clothes, and essentials quickly to those in need.</li>
+                <li>Empowers volunteers to create real change in their local communities.</li>
+                <li>Ensures transparency with proof-based delivery tracking.</li>
+            </ul>
+
+            <h3>How We Make an Impact</h3>
+            <ul class="why-list">
+                <li>Donors share surplus food, clothes, or supplies with ease.</li>
+                <li>Nearby volunteers accept and deliver donations responsibly.</li>
+                <li>Admins monitor activity to maintain trust and safety.</li>
+            </ul>
+
+            <p>
+                Kindora is more than a platform — it’s a movement to turn excess into hope and compassion into action.
+            </p>
+        </div>
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works container">
+        <h2 class="section-title">How it works</h2>
+        <div class="steps">
+            <div class="step"><div class="step-number">1</div><h4>Donate</h4><p>Post food or items.</p></div>
+            <div class="step"><div class="step-number">2</div><h4>Volunteer Accepts</h4><p>Member picks it up.</p></div>
+            <div class="step"><div class="step-number">3</div><h4>Delivery</h4><p>Delivered to those in need.</p></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta container">
+        <h3>Let's fight hunger together</h3>
+        <button class="btn btn-primary" data-protected="true"
+                onclick="window.location.href='membersdashboard.html'">Become a Member</button>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="footer" class="site-footer container">
+    <div class="footer-container">
+        <div class="footer-section">
+            <h3 class="footer-title">Kindora</h3>
+            <p class="footer-text">Connecting donors, volunteers, and communities to reduce waste and help people in need.</p>
+        </div>
+
+        <div class="footer-section">
+            <h3 class="footer-title">Contact</h3>
+            <p class="footer-text">akkanavenkatahematej@gmail.com</p>
+            <p class="footer-text">+91 9346003304</p>
+        </div>
+
+        <div class="footer-section">
+            <h3 class="footer-title">Follow Us</h3>
+            <div class="footer-social">
+                <a class="social-icon" href="#" title="Twitter">🐦</a>
+                <a class="social-icon" href="#" title="Facebook">📘</a>
+                <a class="social-icon" href="#" title="Instagram">📸</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Kindora — Building kinder communities.</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

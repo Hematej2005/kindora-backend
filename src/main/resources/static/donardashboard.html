@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kindora — Donor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+          --soft-yellow:#f7e99a;
+          --teal:#1f6a63;
+          --muted:#5b6b63;
+          --card:#fff5d6;
+          --bg:#fffdf7;
+          --rounded:14px;
+          --shadow-soft:0 8px 40px rgba(0,0,0,0.06);
+          --max:920px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{margin:0;font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--teal);-webkit-font-smoothing:antialiased}
+        .container{max-width:100%;margin:18px auto;padding:0 16px}
+
+        /* Header */
+        .site-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          padding:14px;
+          background:#fff;
+          border-radius:12px;
+          box-shadow:0 6px 20px rgba(0,0,0,0.04);
+        }
+        .header-left{display:flex;align-items:center;gap:12px}
+        .hamburger{
+          width:46px;height:38px;border-radius:10px;border:0;background:var(--teal);
+          display:flex;flex-direction:column;justify-content:center;padding:6px;color:#fff;cursor:pointer;
+        }
+        .hamburger .bar{height:3px;background:#fff;border-radius:3px;margin:2px 0}
+        .brand{display:flex;align-items:center;gap:10px}
+        .logo-16x9{width:120px;height:36px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .logo-16x9 img{height:100%}
+        .app-title{font-weight:700;color:var(--teal);font-size:20px}
+
+        /* profile */
+        .profile{width:44px;height:44px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .profile-menu{position:absolute;right:16px;top:70px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.12);display:none;min-width:160px;z-index:200}
+        .profile-menu a{display:block;padding:10px 12px;color:var(--muted);font-weight:700}
+        .profile-menu a:hover{background:#f4f9f6;color:var(--teal)}
+
+        /* Mobile menu (only 2 items) */
+        .mobile-menu{
+          position:fixed;top:0;left:0;height:100vh;width:320px;max-width:86vw;background:#fff;
+          transform:translateX(-110%);transition:transform .28s cubic-bezier(.22,.9,.26,1);box-shadow:6px 0 30px rgba(0,0,0,0.14);
+          z-index:1200;border-radius:0 12px 12px 0;overflow:auto;padding:0;
+        }
+        .mobile-menu.open{transform:translateX(0)}
+        .mobile-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #f4f4f4}
+        .mobile-body{padding:12px}
+        .dash-btn{display:block;margin:12px 0;padding:12px;border-radius:28px;font-weight:700;text-align:center;text-decoration:none}
+        .dash-btn.primary{background:var(--teal);color:#fff}
+        .dash-btn.secondary{background:#ffeaa8;color:var(--teal)}
+
+        /* overlay */
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:1100}
+        .overlay.show{opacity:1;pointer-events:auto}
+
+        /* Banner */
+        .banner{background:var(--soft-yellow);border-radius:12px;padding:28px 18px;text-align:center;margin-top:14px}
+        .banner h1{margin:0;font-size:34px;color:var(--teal);font-weight:800}
+        .banner p{margin:8px 0 0;color:var(--muted);font-weight:600}
+        .hero-emoji{font-size:44px;margin-top:8px;display:block}
+
+        /* Donation option cards - base (desktop) */
+        .options-row{
+          display:flex;
+          gap:18px;
+          margin:18px 0;
+          flex-wrap:wrap;
+          justify-content:center;
+        }
+        .option-card{
+          flex:1 1 calc(33.333% - 12px);
+          min-width:220px;
+          background:#fff;
+          padding:18px;
+          border-radius:12px;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          box-shadow:0 6px 20px rgba(0,0,0,0.04);
+          text-align:center;
+        }
+        .option-card.alt{background:var(--soft-yellow)}
+        .option-icon{width:96px;height:96px;border-radius:12px;background:#fff;display:grid;place-items:center;margin-bottom:12px;box-shadow:0 4px 10px rgba(0,0,0,0.04)}
+        .option-icon img{width:72px;height:72px;object-fit:contain;display:block}
+        .option-title{font-weight:700;color:var(--teal);margin:6px 0}
+        .option-desc{color:var(--muted);margin:0 0 10px}
+        .option-btn{margin-top:8px;padding:8px 18px;border-radius:20px;border:0;font-weight:800;cursor:pointer}
+        .option-btn.primary{background:var(--teal);color:#fff}
+        .option-btn.secondary{background:#f7d24f;color:#1f6a63}
+
+        /* section headings */
+        .section-title{margin:24px 0 12px;font-size:22px;text-align:center;color:var(--teal);}
+
+        /* table */
+        .table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .table thead{background:transparent}
+        .table th, .table td{padding:12px 14px;text-align:left;border-bottom:1px solid #f2f2f2;color:var(--muted);font-weight:600}
+        .table th:first-child, .table td:first-child{text-align:center;width:72px}
+        .badge{display:inline-block;padding:6px 10px;border-radius:12px;font-weight:700}
+        .status-delivered{background:#e6f9e9;color:#2a6b52}
+        .status-assigned{background:#fff4cc;color:#6b5a00}
+        .status-picked{background:#e6f6ee;color:#2a6b52}
+        .status-pending{background:#f1f4e8;color:#2a6b52}
+        .icon-circle{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--teal);color:#fff;font-weight:700}
+        .proof-thumb{width:44px;height:44px;border-radius:6px;object-fit:cover;cursor:pointer}
+
+        /* volunteer cell small text */
+        .vol-name{font-weight:700;color:var(--teal);display:block}
+        .vol-meta{font-size:12px;color:var(--muted);margin-top:6px;display:block}
+
+        /* Loading / error row */
+        .table .tr-loading td { text-align:center; color:var(--muted); padding:18px; }
+
+        /* modal */
+        .img-modal { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:#fff; padding:12px; border-radius:10px; box-shadow:0 12px 40px rgba(0,0,0,0.3); z-index:2000; display:none; max-width:90vw; max-height:90vh; overflow:auto }
+        .img-modal.show { display:block; }
+        .img-modal img { max-width:100%; height:auto; display:block; border-radius:8px; }
+        .img-modal .close { margin-top:8px; background:var(--teal); color:#fff; border:0; padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:700; }
+
+        /* responsive */
+        @media (max-width:900px){ .option-card{ flex:1 1 calc(50% - 18px); max-width:320px; } }
+        @media (max-width:600px){ .option-card{ flex:1 1 100%; max-width:340px; margin-left:auto; margin-right:auto; } .banner h1{font-size:28px} }
+        a, a:hover, a:active, a:focus{ text-decoration:none; color:inherit; outline:none; }
+    </style>
+
+</head>
+<body>
+<div class="container">
+    <!-- header -->
+    <header class="site-header" role="banner">
+        <div class="header-left">
+            <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+            <div class="brand" role="img" aria-label="Kindora">
+                <div class="logo-16x9">
+                    <img src="data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='36'%3E%3Crect width='120' height='36' fill='%23fff'/%3E%3Ctext x='6' y='24' font-family='Poppins, sans-serif' font-weight='700' font-size='20' fill='%231f6a63'%3EKindora%3C/text%3E%3C/svg%3E" alt="Kindora">
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;position:relative">
+            <div id="profileBtn" class="profile" tabindex="0" aria-haspopup="true" aria-expanded="false">A</div>
+            <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
+                <a href="#" id="viewProfile" role="menuitem">Profile</a>
+
+                <a href="#" id="logoutBtn" role="menuitem">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- overlay -->
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+    <!-- mobile slide-in menu -->
+    <aside id="mobile-menu" class="mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu">
+        <div class="mobile-header">
+            <strong>Menu</strong>
+            <button id="mobile-close" aria-label="Close menu" style="font-size:20px;background:none;border:0;cursor:pointer">✕</button>
+        </div>
+        <div class="mobile-body">
+            <a class="dash-btn primary" href="membersdashboard.html">Member Dashboard</a>
+            <a class="dash-btn secondary" href="donardashboard.html">Donor Dashboard</a>
+        </div>
+    </aside>
+
+    <!-- banner -->
+    <div class="banner" role="region" aria-label="Welcome banner">
+        <h1 id="welcomeTitle">Welcome back</h1>
+        <span class="hero-emoji" id="heroEmoji">😊</span>
+        <p id="heroSubtitle">Happy to donate</p>
+    </div>
+
+    <!-- donation option cards (kept for navigation) -->
+    <h2 class="section-title">Donation Options</h2>
+    <div class="options-row" role="region" aria-label="Donation options">
+        <div class="option-card">
+            <div class="option-icon"><img src="foodlogo.jpg" alt="Donate Food"></div>
+            <div class="option-title">Donate Food</div>
+            <div class="option-desc">Share extra food with those in need.</div>
+            <button class="option-btn primary" data-target="donatefood.html">Donate</button>
+        </div>
+
+        <div class="option-card alt">
+            <div class="option-icon"><img src="clotheslogo.jpg" alt="Donate Clothes"></div>
+            <div class="option-title">Donate Clothes</div>
+            <div class="option-desc">Donate clothes and essentials.</div>
+            <button class="option-btn secondary" data-target="donateclothes.html">Donate</button>
+        </div>
+
+        <div class="option-card">
+            <div class="option-icon"><img src="animallogo.jpg" alt="Donate for Animals"></div>
+            <div class="option-title">Donate for Animals</div>
+            <div class="option-desc">Give leftovers safely to animals.</div>
+            <button class="option-btn primary" data-target="donateanimalfood.html">Donate</button>
+        </div>
+    </div>
+
+    <!-- donation history table for donor -->
+    <h2 class="section-title">My Donation History</h2>
+    <p style="text-align:center;color:var(--muted);margin-top:-8px">Track the status and volunteer details for your donations.</p>
+    <div style="margin-top:12px;overflow-x:auto">
+        <table class="table" id="historyTable" role="table" aria-label="Donation history">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Volunteer</th>
+                <th>Proof</th>
+            </tr>
+            </thead>
+            <tbody id="historyBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div style="height:36px"></div>
+</div>
+
+<!-- image modal -->
+<div id="imgModal" class="img-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div style="text-align:right"><button id="imgClose" class="close">Close</button></div>
+    <div id="imgWrap" style="text-align:center;margin-top:6px"></div>
+</div>
+
+<!-- PROFILE MODAL -->
+<!-- PROFILE MODAL (do NOT make it visible by default) -->
+<style>
+    /* small modal CSS — can be placed in your main <style> too */
+    .profile-modal__backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; z-index: 9999; }
+    .profile-modal__backdrop.show { display: flex; }
+    .profile-modal { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+    .profile-modal h2 { margin-top:0; color:var(--teal); }
+    .profile-modal p { margin:8px 0; color:#264b47; }
+</style>
+
+<div id="profileModalBackdrop" class="profile-modal__backdrop" aria-hidden="true">
+    <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">My Profile</h2>
+        <p><strong>Name:</strong> <span id="pm_name">-</span></p>
+        <p><strong>Email:</strong> <span id="pm_email">-</span></p>
+        <p><strong>Phone:</strong> <span id="pm_phone">-</span></p>
+        <p><strong>Role:</strong> <span id="pm_role">-</span></p>
+
+        <div style="text-align:right;margin-top:12px">
+            <button id="closeProfileModal" class="btn-ghost" style="padding:8px 14px;border:1px solid #ccc;border-radius:8px;cursor:pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const AUTH_ME = '/api/auth/me';
+      const LOGOUT = '/api/auth/logout';
+      const HISTORY = '/api/donor/history'; // ensure backend endpoint matches
+
+      // UI wiring
+      const hamburger = document.getElementById('hamburger'), mobileMenu = document.getElementById('mobile-menu'),
+            mobileClose = document.getElementById('mobile-close'), overlay = document.getElementById('overlay');
+
+      function openMenu(){ mobileMenu && mobileMenu.classList.add('open'); overlay && overlay.classList.add('show'); if (hamburger) hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+      function closeMenu(){ mobileMenu && mobileMenu.classList.remove('open'); overlay && overlay.classList.remove('show'); if (hamburger) hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+      hamburger && hamburger.addEventListener('click', ()=> mobileMenu && mobileMenu.classList.contains('open') ? closeMenu() : openMenu());
+      mobileClose && mobileClose.addEventListener('click', closeMenu);
+      overlay && overlay.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e)=> { if (e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) closeMenu(); });
+
+      // profile menu
+      (function(){
+        const profileBtn = document.getElementById('profileBtn'), profileMenu = document.getElementById('profileMenu');
+        if (!profileBtn || !profileMenu) return;
+        let open = false;
+        profileBtn.addEventListener('click', (e)=> { e.stopPropagation(); open = !open; profileMenu.style.display = open ? 'block': 'none'; profileMenu.setAttribute('aria-hidden', String(!open)); profileBtn.setAttribute('aria-expanded', String(open)); });
+        document.addEventListener('click', (e)=> { if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)){ open=false; profileMenu.style.display='none'; profileMenu.setAttribute('aria-hidden','true'); profileBtn.setAttribute('aria-expanded','false'); } });
+        const logout = document.getElementById('logoutBtn');
+        if (logout) logout.addEventListener('click', async function(e){ e.preventDefault(); try { await fetch(LOGOUT, { method:'POST', credentials:'include' }); } catch(_){} window.location.href='/authentication.html'; });
+      })();
+// PROFILE modal logic (use class toggles)
+const viewProfile = document.getElementById("viewProfile");
+const modalBackdrop = document.getElementById("profileModalBackdrop");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+async function openProfileModalWithData() {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) return; // do nothing if not logged in
+    const user = await res.json();
+
+    document.getElementById("pm_name").textContent = user.fullName || user.name || '-';
+    document.getElementById("pm_email").textContent = user.email || user.username || '-';
+    document.getElementById("pm_phone").textContent = user.phoneNumber || user.phone || user.mobile || '-';
+    document.getElementById("pm_role").textContent = user.role || '-';
+
+    modalBackdrop.classList.add('show');
+    modalBackdrop.setAttribute('aria-hidden', 'false');
+  } catch (err) {
+    console.error('Failed to load profile', err);
+  }
+}
+
+function closeProfileModalFn() {
+  modalBackdrop.classList.remove('show');
+  modalBackdrop.setAttribute('aria-hidden', 'true');
+}
+
+// wiring
+if (viewProfile) {
+  viewProfile.addEventListener('click', function (e) {
+    e.preventDefault();
+    openProfileModalWithData();
+  });
+}
+if (closeProfileModal) closeProfileModal.addEventListener('click', closeProfileModalFn);
+
+// close when clicking on backdrop itself
+if (modalBackdrop) {
+  modalBackdrop.addEventListener('click', function (ev) {
+    if (ev.target === modalBackdrop) closeProfileModalFn();
+  });
+}
+
+      // donate navigation
+      document.querySelectorAll('.option-btn').forEach(btn => btn.addEventListener('click', function(){ const tgt = btn.getAttribute('data-target')||'/'; window.location.href = tgt; }));
+
+      // modal helpers
+      const imgModal = document.getElementById('imgModal'), imgWrap = document.getElementById('imgWrap'), imgClose = document.getElementById('imgClose');
+      function showImage(url){
+        if(!url) return;
+        imgWrap.innerHTML = '';
+        const im = document.createElement('img'); im.src = url; im.alt = 'Proof photo';
+        imgWrap.appendChild(im);
+        imgModal.classList.add('show'); imgModal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+      }
+      function hideImage(){ imgModal.classList.remove('show'); imgModal.setAttribute('aria-hidden','true'); imgWrap.innerHTML=''; document.body.style.overflow=''; }
+      imgClose && imgClose.addEventListener('click', hideImage);
+      imgModal && imgModal.addEventListener('click', function(e){ if (e.target === imgModal) hideImage(); });
+
+      // populate header user info
+      (async function populateMe(){
+        try {
+          const res = await fetch(AUTH_ME, { credentials: 'include' });
+          if (!res.ok) return;
+          const user = await res.json();
+          const full = (user && (user.fullName || user.name || user.full_name || user.email)) || '';
+          const firstName = (full && String(full).toString().trim().split(/\s+/)[0]) || '';
+          const profileBtn = document.getElementById('profileBtn'), welcome = document.getElementById('welcomeTitle'), heroEmoji = document.getElementById('heroEmoji');
+          if (profileBtn) profileBtn.textContent = (firstName ? firstName.charAt(0).toUpperCase() : (user && user.initial) || 'A');
+          if (welcome && firstName) welcome.textContent = 'Welcome back, ' + firstName;
+          if (heroEmoji && user && user.emoji) heroEmoji.textContent = user.emoji;
+        } catch (err) { console.debug('Could not load /api/auth/me', err); }
+      })();
+
+      // date formatting helper
+      function fmtDate(d){
+        if (!d) return '-';
+        try {
+          if (typeof d === 'number') return new Date(d).toLocaleString();
+          if (typeof d === 'string') {
+            if (/^\d+$/.test(d)) return new Date(Number(d)).toLocaleString();
+            const parsed = Date.parse(d);
+            if (!isNaN(parsed)) return new Date(parsed).toLocaleString();
+            return d;
+          }
+          return String(d);
+        } catch (e) { return String(d); }
+      }
+
+      // VOLUNTEER extraction (prioritizes 'volunteer' object returned by your backend)
+      function extractVolunteer(item){
+        // 1) Prefer item.volunteer.{name,phone,email}
+        if (item && item.volunteer && typeof item.volunteer === 'object') {
+          const v = item.volunteer;
+          return {
+            name: v.name || v.fullName || v.full_name || v.memberName || null,
+            email: v.email || v.userEmail || v.user_email || null,
+            phone: v.phone || v.mobile || v.phoneNumber || v.phone_number || null
+          };
+        }
+
+        // 2) Common alternative shapes (assignedUser / assignedMember / member)
+        const name =
+          item.assignedMemberName ||
+          item.volunteerName ||
+          item.memberName ||
+          item.member_name ||
+          (item.assignedMember && (item.assignedMember.name || item.assignedMember.fullName)) ||
+          (item.member && (item.member.name || item.member.fullName)) ||
+          null;
+
+        const email =
+          item.volunteerEmail ||
+          item.assignedUserEmail ||
+          item.memberUserEmail ||
+          (item.assignedUser && (item.assignedUser.email || item.assignedUser.userEmail)) ||
+          (item.member && item.member.user && (item.member.user.email)) ||
+          (item.user && item.user.email) ||
+          null;
+
+        const phone =
+          item.volunteerPhone ||
+          item.assignedUserPhone ||
+          item.memberPhone ||
+          (item.assignedUser && (item.assignedUser.phone || item.assignedUser.mobile)) ||
+          (item.member && item.member.user && (item.member.user.phone || item.member.user.mobile)) ||
+          null;
+
+        // fallback derive name from email if name missing
+        let finalName = name;
+        if (!finalName && email) {
+          const local = String(email).split('@')[0] || email;
+          finalName = local.split(/[._]/).map(w=> w ? (w.charAt(0).toUpperCase()+w.slice(1)) : '').join(' ').trim();
+        }
+
+        return { name: finalName, email: email, phone: phone };
+      }
+
+      // MEMBER PROOF extraction (preserve your existing logic — unchanged)
+      function extractMemberProof(item){
+        if (item.memberProof && (item.memberProof.imageUrl || item.memberProof.image_url || item.memberProof.url)) {
+          return item.memberProof.imageUrl || item.memberProof.image_url || item.memberProof.url;
+        }
+        if (item.member_proof_image && (item.member_proof_image.imageUrl || item.member_proof_image.image_url || item.member_proof_image.url)) {
+          return item.member_proof_image.imageUrl || item.member_proof_image.image_url || item.member_proof_image.url;
+        }
+        if (item.memberProofs && Array.isArray(item.memberProofs) && item.memberProofs.length) {
+          const p = item.memberProofs[0];
+          return p.imageUrl || p.image_url || p.url || null;
+        }
+        if (item.proofUrl) return item.proofUrl;
+        if (item.proof && typeof item.proof === 'string') return item.proof;
+        if (Array.isArray(item.images) && item.images.length) {
+          const mp = item.images.find(i => i && (i.type === 'member_proof' || i.tag === 'member_proof' || i.memberProof));
+          if (mp) return mp.imageUrl || mp.image_url || mp.url || mp.src || null;
+          const first = item.images[0];
+          return first && (first.imageUrl || first.image_url || first.url || first.src) || null;
+        }
+        if (Array.isArray(item.donationImages) && item.donationImages.length) {
+          const mp2 = item.donationImages.find(i => i && (i.type === 'member_proof' || i.tag === 'member_proof' || i.isMemberProof));
+          if (mp2) return mp2.imageUrl || mp2.image_url || mp2.url || null;
+        }
+        return null;
+      }
+
+      // main loader
+      (async function loadHistory(){
+        const tbody = document.getElementById('historyBody');
+        if (!tbody) return;
+        function setLoading(){ tbody.innerHTML = '<tr class="tr-loading"><td colspan="5">Loading donation history…</td></tr>'; }
+        function setEmpty(){ tbody.innerHTML = '<tr class="tr-loading"><td colspan="5">No donations yet.</td></tr>'; }
+        function setError(){ tbody.innerHTML = '<tr class="tr-loading"><td colspan="5">Could not load history. Please try later.</td></tr>'; }
+
+        setLoading();
+
+        try {
+          const res = await fetch(HISTORY, { credentials: 'include' });
+          if (res.status === 401 || res.status === 403) {
+            window.location.href = '/authentication.html';
+            return;
+          }
+          if (!res.ok) throw new Error('no-history');
+          const list = await res.json();
+          if (!Array.isArray(list) || list.length === 0) { setEmpty(); return; }
+
+          tbody.innerHTML = '';
+          list.forEach(item => {
+            // extract donation fields with many possible names
+            const type = item.type || item.donationType || item.typeName || item.category || '';
+            const createdAt = item.createdAt || item.created_at || item.date || item.available_from || item.availableAt || item.created || item.availableFrom;
+            const dateText = fmtDate(createdAt);
+            const status = (item.status || item.state || item.statusText || 'AVAILABLE').toString();
+            const statusLower = status.toLowerCase();
+
+            // volunteer extraction (name from members table, email/phone from users table)
+            const vol = extractVolunteer(item);
+            const volName = vol.name || '—';
+            const volEmail = vol.email || '—';
+            const volPhone = vol.phone || null;
+
+            // member proof extraction (prefer member proof url)
+            const proofUrl = extractMemberProof(item);
+
+            // create row
+            const tr = document.createElement('tr');
+
+            // Type icon cell
+            const tdType = document.createElement('td');
+            const icon = document.createElement('div');
+            icon.className = 'icon-circle';
+            icon.textContent = (type && type[0]) ? type[0].toUpperCase() : '-';
+            tdType.appendChild(icon);
+            tr.appendChild(tdType);
+
+            // Date cell
+            const tdDate = document.createElement('td');
+            tdDate.textContent = dateText;
+            tr.appendChild(tdDate);
+
+            // Status cell with badge
+            const tdStatus = document.createElement('td');
+            const sspan = document.createElement('span');
+            let cls = 'status-pending';
+            if (statusLower.includes('deliver')) cls = 'status-delivered';
+            else if (statusLower.includes('picked') || statusLower.includes('packed')) cls = 'status-picked';
+            else if (statusLower.includes('assign') || statusLower.includes('available')) cls = 'status-assigned';
+            sspan.className = 'badge ' + cls;
+            sspan.textContent = status || 'AVAILABLE';
+            tdStatus.appendChild(sspan);
+            tr.appendChild(tdStatus);
+
+            // Volunteer cell: show name, then email (guaranteed), then optional phone
+            const tdVol = document.createElement('td');
+            tdVol.innerHTML = `<span style="font-weight:700">${escapeHtml(volName)}</span>
+                               <div class="small-muted">Email: ${escapeHtml(volEmail)}</div>` + (volPhone ? `<div class="small-muted">Phone: ${escapeHtml(volPhone)}</div>` : '');
+            tr.appendChild(tdVol);
+
+            // Proof cell: ONLY show member proof (not donor image). If proof exists show thumbnail clickable
+            const tdProof = document.createElement('td');
+            if (proofUrl) {
+              const img = document.createElement('img');
+              img.className = 'proof-thumb';
+              img.src = proofUrl;
+              img.alt = 'member proof';
+              img.addEventListener('click', ()=> showImage(proofUrl));
+              tdProof.appendChild(img);
+            } else {
+              tdProof.textContent = '—';
+            }
+            tr.appendChild(tdProof);
+
+            tbody.appendChild(tr);
+          });
+
+        } catch (err) {
+          console.debug('Error fetching donor history', err);
+          setError();
+        }
+      })();
+
+      // escape helper
+      function escapeHtml(s){ if (!s && s !== 0) return ''; return String(s).replace(/[&<>"'`=\/]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[c]; }); }
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kindora — Nearby Donations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* (unchanged CSS from your version) */
+        :root{
+          --soft-yellow:#f7e99a;
+          --teal:#1f6a63;
+          --muted:#5b6b63;
+          --card:#fff5d6;
+          --bg:#fffdf7;
+          --rounded:14px;
+          --shadow-soft:0 8px 40px rgba(0,0,0,0.06);
+          --max:980px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--teal);-webkit-font-smoothing:antialiased}
+        .container{max-width:100%;margin:18px auto;padding:0 16px}
+        .site-header{display:flex;justify-content:space-between;align-items:center;padding:14px;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .header-left{display:flex;align-items:center;gap:12px}
+        .hamburger{width:46px;height:38px;border-radius:10px;border:0;background:var(--teal);display:flex;flex-direction:column;justify-content:center;padding:6px;color:#fff;cursor:pointer}
+        .hamburger .bar{height:3px;background:#fff;border-radius:3px;margin:2px 0}
+        .brand{display:flex;align-items:center;gap:10px}
+        .logo-16x9{width:120px;height:36px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .logo-16x9 img{height:100%}
+        .app-title{font-weight:700;color:var(--teal);font-size:20px}
+        .profile{width:44px;height:44px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .profile-menu{position:absolute;right:16px;top:70px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.12);display:none;min-width:160px;z-index:200}
+        .profile-menu a{display:block;padding:10px 12px;color:var(--muted);font-weight:700}
+        .profile-menu a:hover{background:#f4f9f6;color:var(--teal)}
+        .mobile-menu{position:fixed;top:0;left:0;height:100vh;width:320px;max-width:86vw;background:#fff;transform:translateX(-110%);transition:transform .28s;box-shadow:6px 0 30px rgba(0,0,0,0.14);z-index:1200;border-radius:0 12px 12px 0;overflow:auto;padding:0}
+        .mobile-menu.open{transform:translateX(0)}
+        .mobile-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #f4f4f4}
+        .mobile-body{padding:12px}
+        .dash-btn{display:block;margin:12px 0;padding:12px;border-radius:28px;font-weight:700;text-align:center;text-decoration:none}
+        .dash-btn.primary{background:var(--teal);color:#fff}
+        .dash-btn.secondary{background:#ffeaa8;color:var(--teal)}
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:1100}
+        .overlay.show{opacity:1;pointer-events:auto}
+        .banner{background:var(--soft-yellow);border-radius:12px;padding:24px 18px;text-align:center;margin-top:14px}
+        .banner h1{margin:0;font-size:28px;color:var(--teal);font-weight:800}
+        .banner p{margin:8px 0 0;color:var(--muted);font-weight:600}
+        .table-wrap{margin-top:18px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .table{width:100%;border-collapse:collapse}
+        .table th, .table td{padding:12px 10px;text-align:left;border-bottom:1px solid #f2f2f2;color:var(--muted);font-weight:600}
+        .table th:first-child,.table td:first-child{text-align:center;width:64px}
+        .icon-circle{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--teal);color:#fff;font-weight:700}
+        .small-muted{color:#6b7773;font-weight:500;font-size:13px}
+        .btn-accept{background:var(--teal);color:#fff;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+        .btn-view{background:#fff;border:1px solid rgba(31,106,99,0.12);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--teal)}
+        .distance{font-weight:700;color:var(--muted);font-size:13px}
+        .table .row-empty td{text-align:center;padding:18px;color:var(--muted)}
+        .modal { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(.98); background: #fff; border-radius:12px; padding:18px; box-shadow: 0 10px 40px rgba(0,0,0,0.16); z-index:1600; min-width:320px; max-width:92vw; display:none;}
+        .modal.show{ display:block; transform: translate(-50%,-50%) scale(1); }
+        .modal h3{margin:0 0 8px;color:var(--teal)}
+        .modal p{color:var(--muted); margin:6px 0}
+        .modal .row{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+        .modal .label{width:130px;font-weight:700;color:var(--teal)}
+        .modal .value{flex:1;color:var(--muted)}
+        .modal img{width:100%;max-height:320px;object-fit:cover;border-radius:8px;display:block;margin-top:10px}
+        @media (max-width:760px){
+          .table th, .table td{padding:10px 8px;font-size:14px}
+          .banner h1{font-size:22px}
+        }
+    </style>
+</head>
+<body>
+<div id="overlay" class="overlay" aria-hidden="true"></div>
+
+<aside id="mobile-menu" class="mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu">
+    <div class="mobile-header">
+        <strong>Menu</strong>
+        <button id="mobile-close" aria-label="Close menu" style="font-size:20px;background:none;border:0;cursor:pointer">✕</button>
+    </div>
+    <div class="mobile-body">
+        <a class="dash-btn primary" href="membersdashboard.html">Member Dashboard</a>
+        <a class="dash-btn secondary" href="donardashboard.html">Donor Dashboard</a>
+    </div>
+</aside>
+
+<div class="container">
+    <header class="site-header" role="banner">
+        <div class="header-left">
+            <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <div class="brand" role="img" aria-label="Kindora">
+                <div class="logo-16x9"><img src="data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='36'%3E%3Crect width='120' height='36' fill='%23fff'/%3E%3Ctext x='6' y='24' font-family='Poppins, sans-serif' font-weight='700' font-size='20' fill='%231f6a63'%3EKindora%3C/text%3E%3C/svg%3E" alt="Kindora"></div>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;position:relative">
+            <div id="profileBtn" class="profile" tabindex="0" aria-haspopup="true" aria-expanded="false">A</div>
+            <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
+                <a href="#" id="viewProfile" role="menuitem">Profile</a>
+
+                <a href="/authentication.html" id="logoutBtn" role="menuitem">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="banner" role="region" aria-label="Nearby donations banner">
+        <h1>Nearby Donations</h1>
+        <p>Donations near you — closest ones shown first (top 5)</p>
+    </div>
+
+    <div class="table-wrap" role="region" aria-label="Nearby donations list">
+        <table class="table" role="table" aria-label="Nearby donations table">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>ID / Donor</th>
+                <th>Location</th>
+                <th>Distance</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody id="nearbyBody">
+            <tr class="row-empty"><td colspan="6">Loading nearby donations…</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div style="height:36px"></div>
+</div>
+
+<div id="viewModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <button id="modalClose" style="float:right;background:transparent;border:0;font-weight:700;cursor:pointer">✕</button>
+    <h3 id="modalTitle">Donation details</h3>
+
+    <div id="modalBody">
+        <div class="row"><div class="label">Donation ID</div><div class="value" id="m_id">—</div></div>
+        <div class="row"><div class="label">Donor</div><div class="value" id="m_donor">—</div></div>
+        <div class="row"><div class="label">Type</div><div class="value" id="m_type">—</div></div>
+        <div class="row"><div class="label">Availability</div><div class="value" id="m_pickup">—</div></div>
+        <div class="row"><div class="label">Location</div><div class="value" id="m_fulladdress">—</div></div>
+        <div class="row"><div class="label">Map</div><div class="value" id="m_map"><span class="small-muted">—</span></div></div>
+        <div class="row"><div class="label">Phone</div><div class="value" id="m_phone">—</div></div>
+        <div class="row"><div class="label">Email</div><div class="value" id="m_email">—</div></div>
+        <div id="m_image_wrap" style="margin-top:10px;display:none">
+            <div class="label" style="width:100%;margin-bottom:6px;color:var(--teal);font-weight:700">Photo (donor uploaded)</div>
+            <img id="m_image" src="" alt="donation photo">
+        </div>
+    </div>
+</div>
+<!-- PROFILE MODAL (do NOT make it visible by default) -->
+<style>
+    /* small modal CSS — can be placed in your main <style> too */
+    .profile-modal__backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; z-index: 9999; }
+    .profile-modal__backdrop.show { display: flex; }
+    .profile-modal { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+    .profile-modal h2 { margin-top:0; color:var(--teal); }
+    .profile-modal p { margin:8px 0; color:#264b47; }
+</style>
+
+<div id="profileModalBackdrop" class="profile-modal__backdrop" aria-hidden="true">
+    <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">My Profile</h2>
+        <p><strong>Name:</strong> <span id="pm_name">-</span></p>
+        <p><strong>Email:</strong> <span id="pm_email">-</span></p>
+        <p><strong>Phone:</strong> <span id="pm_phone">-</span></p>
+        <p><strong>Role:</strong> <span id="pm_role">-</span></p>
+
+        <div style="text-align:right;margin-top:12px">
+            <button id="closeProfileModal" class="btn-ghost" style="padding:8px 14px;border:1px solid #ccc;border-radius:8px;cursor:pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const nearbyBody = document.getElementById('nearbyBody');
+      const profileBtn = document.getElementById('profileBtn');
+      const profileMenu = document.getElementById('profileMenu');
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileClose = document.getElementById('mobile-close');
+      const overlay = document.getElementById('overlay');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      function openMenu(){ mobileMenu && mobileMenu.classList.add('open'); overlay && overlay.classList.add('show'); if (hamburger) hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+      function closeMenu(){ mobileMenu && mobileMenu.classList.remove('open'); overlay && overlay.classList.remove('show'); if (hamburger) hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+      hamburger && hamburger.addEventListener('click', ()=> mobileMenu && mobileMenu.classList.contains('open') ? closeMenu() : openMenu());
+      mobileClose && mobileClose.addEventListener('click', closeMenu);
+      overlay && overlay.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeMenu(); });
+
+      if (logoutBtn) logoutBtn.addEventListener('click', async (e) => { e.preventDefault(); try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(_){} window.location.href='/authentication.html'; });
+// PROFILE modal logic (use class toggles)
+const viewProfile = document.getElementById("viewProfile");
+const modalBackdrop = document.getElementById("profileModalBackdrop");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+async function openProfileModalWithData() {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) return; // do nothing if not logged in
+    const user = await res.json();
+
+    document.getElementById("pm_name").textContent = user.fullName || user.name || '-';
+    document.getElementById("pm_email").textContent = user.email || user.username || '-';
+    document.getElementById("pm_phone").textContent = user.phoneNumber || user.phone || user.mobile || '-';
+    document.getElementById("pm_role").textContent = user.role || '-';
+
+    modalBackdrop.classList.add('show');
+    modalBackdrop.setAttribute('aria-hidden', 'false');
+  } catch (err) {
+    console.error('Failed to load profile', err);
+  }
+}
+
+function closeProfileModalFn() {
+  modalBackdrop.classList.remove('show');
+  modalBackdrop.setAttribute('aria-hidden', 'true');
+}
+
+// wiring
+if (viewProfile) {
+  viewProfile.addEventListener('click', function (e) {
+    e.preventDefault();
+    openProfileModalWithData();
+  });
+}
+if (closeProfileModal) closeProfileModal.addEventListener('click', closeProfileModalFn);
+
+// close when clicking on backdrop itself
+if (modalBackdrop) {
+  modalBackdrop.addEventListener('click', function (ev) {
+    if (ev.target === modalBackdrop) closeProfileModalFn();
+  });
+}
+
+      // profile menu toggle
+      (function(){
+        let open = false;
+        if (!profileBtn || !profileMenu) return;
+        profileBtn.addEventListener('click', function(e){ e.stopPropagation(); open = !open; profileMenu.style.display = open ? 'block' : 'none'; profileBtn.setAttribute('aria-expanded', String(open)); });
+        document.addEventListener('click', function(e){ if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) { open=false; profileMenu.style.display='none'; profileBtn.setAttribute('aria-expanded','false'); } });
+      })();
+
+      // haversine (km)
+      function haversineKm(lat1, lon1, lat2, lon2){
+        if (lat1==null||lon1==null||lat2==null||lon2==null) return Infinity;
+        const R=6371, toRad=d=>d*Math.PI/180;
+        const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+        const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
+        const c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+        return Math.round(R*c*100)/100; // 2 decimals
+      }
+
+      // load authenticated user (for profile initial) and redirect if not logged in
+      function loadAuthInitial(){
+        return fetch('/api/auth/me', { credentials:'include' })
+          .then(res => {
+            if (!res.ok) throw new Error('no-auth');
+            return res.json();
+          })
+          .then(u => {
+            let name = (u && (u.name || u.fullName || u.full_name || u.email || u.username)) || '';
+            let first = (name||'').toString().trim().split(/\s+/)[0] || '';
+            if (profileBtn) profileBtn.textContent = first ? first.charAt(0).toUpperCase() : (u.initial || 'A');
+            return u;
+          });
+      }
+
+      // small helpers
+      function setLoadingRow(text){ nearbyBody.innerHTML = '<tr class="row-empty"><td colspan="6">'+(text||'Loading...')+'</td></tr>'; }
+      function setEmptyRow(text){ nearbyBody.innerHTML = '<tr class="row-empty"><td colspan="6">'+(text||'No nearby donations currently.')+'</td></tr>'; }
+
+      let memberLocation = null;
+      let nearbyList = [];
+
+      // render top 5
+      function renderList(){
+        if (!nearbyList || nearbyList.length === 0) { setEmptyRow('No nearby donations currently.'); return; }
+        const show = nearbyList.slice(0,5);
+        nearbyBody.innerHTML = '';
+        show.forEach(item => {
+          const tr = document.createElement('tr');
+
+          // Type icon
+          const tdType = document.createElement('td');
+          const icon = document.createElement('div'); icon.className='icon-circle'; icon.textContent = item.type ? String(item.type).charAt(0).toUpperCase() : '-'; tdType.appendChild(icon); tr.appendChild(tdType);
+
+          // ID / donor
+          const tdId = document.createElement('td');
+          tdId.innerHTML = `<div style="font-weight:700">${escapeHtml(item.id)}</div><div class="small-muted">${escapeHtml(item.donorName || item.donor || '-')}</div>`;
+          tr.appendChild(tdId);
+
+          // Location: street, district, landmark
+          const tdLoc = document.createElement('td');
+          const street = item.street || '';
+          const district = item.district || '';
+          const landmark = item.landmark || '';
+          tdLoc.innerHTML = `<div style="font-weight:700">${escapeHtml(street || district || '-')}</div><div class="small-muted">${escapeHtml(district)}${landmark ? ' · ' + escapeHtml(landmark) : ''}</div>`;
+          tr.appendChild(tdLoc);
+
+          // Distance
+          const tdDist = document.createElement('td');
+          tdDist.innerHTML = `<div class="distance">${ item._distance === Infinity ? '—' : (item._distance + ' km') }</div>`;
+          tr.appendChild(tdDist);
+
+          // Image (donor-uploaded) - show thumbnail or dash
+          const tdImg = document.createElement('td');
+          if (item.imageUrl) {
+            const img = document.createElement('img');
+            img.src = item.imageUrl;
+            img.className = 'proof-thumb';
+            img.style.width='60px'; img.style.height='60px'; img.style.objectFit='cover'; img.style.borderRadius='8px'; img.style.cursor='pointer';
+            // open expanded image on click
+            img.addEventListener('click', function(){ showImage(item.imageUrl); });
+            tdImg.appendChild(img);
+          } else {
+            tdImg.textContent = '—';
+          }
+          tr.appendChild(tdImg);
+
+          // Action - accept or view if assigned to this member
+          const tdAct = document.createElement('td');
+          if (item._accepted) {
+            const viewBtn = document.createElement('button'); viewBtn.className='btn-view'; viewBtn.textContent='View'; viewBtn.addEventListener('click', ()=> openViewModal(item.id));
+            tdAct.appendChild(viewBtn);
+          } else {
+            const accept = document.createElement('button'); accept.className='btn-accept'; accept.textContent='Accept'; accept.addEventListener('click', ()=> acceptDonation(item.id));
+            tdAct.appendChild(accept);
+          }
+          tr.appendChild(tdAct);
+
+          nearbyBody.appendChild(tr);
+        });
+      }
+
+      // Accept donation (POST to backend)
+      function acceptDonation(donationId){
+        const idx = nearbyList.findIndex(x => String(x.id) === String(donationId));
+        if (idx === -1) { alert('Donation not found'); return; }
+
+        // Optimistic UI: mark accepted
+        nearbyList[idx]._accepted = true;
+        renderList();
+
+        fetch('/api/member/accept', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ donationId })
+        }).then(res => {
+          if (!res.ok) return res.json().then(j=>{ throw new Error((j && j.error) || ('status ' + res.status)); });
+          return res.json();
+        }).then(json => {
+          // backend should return { success:true, donation: {...} } or similar
+          if (json && json.donation) {
+            const updated = json.donation;
+            const norm = normalizeDonationForClient(updated);
+            // update item in nearbyList (preserve _distance if present)
+            const keepDistance = nearbyList[idx] && nearbyList[idx]._distance;
+            nearbyList[idx] = Object.assign({}, nearbyList[idx], norm);
+            if (keepDistance) nearbyList[idx]._distance = keepDistance;
+          } else if (json && json.id) {
+            // older response style: fetch donation and merge
+            fetch('/api/donations/' + encodeURIComponent(json.id) + '?includeImages=true', { credentials: 'include' })
+              .then(r=> r.ok ? r.json() : null)
+              .then(d => { if (d) nearbyList[idx] = Object.assign({}, nearbyList[idx], normalizeDonationForClient(d)); renderList(); })
+              .catch(()=>{});
+          }
+          renderList();
+        }).catch(err => {
+          console.warn('Could not accept donation', err);
+          alert('Could not accept on server — try again.');
+          // rollback optimistic if preferred:
+          nearbyList[idx]._accepted = false;
+          renderList();
+        });
+      }
+
+      // modal helpers & populate
+      const modal = document.getElementById('viewModal');
+      const modalClose = document.getElementById('modalClose');
+      const setField = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = (text === undefined || text === null) ? '—' : text; };
+      const m_image_wrap = document.getElementById('m_image_wrap');
+      const m_image = document.getElementById('m_image');
+
+      function openViewModal(id){
+        if (!id) return;
+        modal.setAttribute('aria-hidden','false'); modal.classList.add('show');
+        setField('m_id','Loading...');
+        setField('m_donor','');
+        setField('m_type','');
+        setField('m_pickup','');
+        setField('m_fulladdress','');
+        setField('m_map','');
+        setField('m_phone','');
+        setField('m_email','');
+        m_image_wrap.style.display='none';
+        m_image.src='';
+
+        fetch('/api/donations/' + encodeURIComponent(id) + '?includeImages=true', { credentials:'include' })
+          .then(res => { if (!res.ok) throw new Error('no-donation'); return res.json(); })
+          .then(obj => populateModal(obj))
+          .catch(() => {
+            // fallback: use local nearbyList entry
+            const local = nearbyList.find(x => String(x.id) === String(id));
+            if (local) populateModal(local);
+            else setField('m_id', 'Not found');
+          });
+      }
+
+      function populateModal(obj){
+        // obj may be either full donation object from backend or local normalized object
+        const d = normalizeDonationForClient(obj);
+        setField('m_id', d.id || '—');
+        setField('m_donor', d.donorName || d.donor || '—');
+        setField('m_type', d.type || '—');
+
+        // Availability: show from — to if present
+        const from = d.availableFrom || d.available_from || d.availableFromText || d.available_from_text || null;
+        const to = d.availableTo || d.available_to || d.availableToText || d.available_to_text || null;
+        if (from && to) setField('m_pickup', (from + '  —  ' + to));
+        else if (from) setField('m_pickup', from);
+        else if (to) setField('m_pickup', to);
+        else setField('m_pickup','—');
+
+        const full = ((d.street || '') + (d.district ? ', ' + d.district : '') + (d.landmark ? ' · ' + d.landmark : ''));
+        setField('m_fulladdress', full || '—');
+
+        // map link
+        const mapContainer = document.getElementById('m_map');
+        if (d.lat != null && d.lng != null) {
+          const a = document.createElement('a');
+          a.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.lat + ',' + d.lng)}`;
+          a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Open in maps'; a.className = 'small-muted';
+          mapContainer.innerHTML = ''; mapContainer.appendChild(a);
+        } else {
+          mapContainer.innerHTML = '<span class="small-muted">No coordinates provided</span>';
+        }
+
+        setField('m_phone', d.donorPhone || d.phone || '—');
+        setField('m_email', d.donorEmail || d.email || '—');
+
+        const imgUrl = (d.images && d.images.length) ? (d.images[0].imageUrl || d.images[0].image_url) : (d.imageUrl || d.previewUrl || null);
+        if (imgUrl) { m_image.src = imgUrl; m_image_wrap.style.display='block'; } else { m_image_wrap.style.display='none'; }
+      }
+
+      modalClose.addEventListener('click', function(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); });
+
+      // image-only modal (used when clicking the small thumbnail)
+      function showImage(url){
+        // reuse same modal but show only the image large — populate minimal fields
+        modal.setAttribute('aria-hidden','false'); modal.classList.add('show');
+        setField('m_id','');
+        setField('m_donor','');
+        setField('m_type','');
+        setField('m_pickup','');
+        setField('m_fulladdress','');
+        setField('m_map','');
+        setField('m_phone','');
+        setField('m_email','');
+        m_image_wrap.style.display='block';
+        m_image.src = url;
+      }
+
+      // Normalize donation object from backend OR local — returns object with lat/lng, donorName, imageUrl, donorPhone and donorEmail, _distance placeholder
+      function normalizeDonationForClient(d) {
+        if (!d) return d;
+        const obj = {};
+        // canonical lat/lng
+        const lat = d.lat !== undefined ? d.lat : (d.latitude !== undefined ? d.latitude : null);
+        const lng = d.lng !== undefined ? d.lng : (d.longitude !== undefined ? d.longitude : (d.lon !== undefined ? d.lon : null));
+        obj.lat = lat; obj.lng = lng;
+
+        // donor name fallback chain
+        const donorName = d.donorName || d.donor || d.donor_name || (d.donor_user && (d.donor_user.fullName || d.donor_user.name)) || null;
+        obj.donorName = donorName;
+
+        // donor phone/email: try common keys
+        const donorPhone = d.donorPhone || d.donor_phone || (d.donor_user && (d.donor_user.phone || d.donor_user.mobile)) || d.phone || null;
+        const donorEmail = d.donorEmail || d.donor_email || (d.donor_user && d.donor_user.email) || d.email || null;
+        obj.donorPhone = donorPhone;
+        obj.donorEmail = donorEmail;
+
+        // image fallback
+        const imageUrl = d.imageUrl || d.image_url || (d.images && d.images.length && (d.images[0].imageUrl || d.images[0].image_url)) || null;
+        obj.imageUrl = imageUrl;
+
+        // basic fields preserved
+        obj.id = d.id;
+        obj.type = d.type;
+        obj.street = d.street;
+        obj.district = d.district;
+        obj.landmark = d.landmark;
+        obj.availableFrom = d.availableFrom || d.available_from;
+        obj.availableTo = d.availableTo || d.available_to;
+        obj.images = d.images || d.images || [];
+        obj.status = d.status;
+
+        // compute distance if we have memberLocation
+        const _distance = (memberLocation && lat != null && lng != null) ? haversineKm(memberLocation.lat, memberLocation.lon, Number(lat), Number(lng)) : Infinity;
+        obj._distance = _distance === Infinity ? Infinity : Math.round((_distance + Number.EPSILON) * 100) / 100;
+
+        // keep any original fields that might be used by other code
+        Object.keys(d || {}).forEach(k => { if (!(k in obj)) obj[k] = d[k]; });
+
+        return obj;
+      }
+
+      // load data path: get member primary location -> request nearby endpoint
+      function loadNearby(){
+        setLoadingRow('Fetching donations near you…');
+
+        loadAuthInitial()
+          .then(auth => {
+            // fetch member profile (primary saved location)
+            return fetch('/api/profile', { credentials:'include' })
+              .then(r => r.ok ? r.json() : null)
+              .then(mprofile => {
+                if (mprofile && Array.isArray(mprofile.locations) && mprofile.locations.length) {
+                  const p = mprofile.locations[0];
+                  if (p && p.lat != null && (p.lng != null || p.lon != null)) memberLocation = { lat: Number(p.lat), lon: Number(p.lng != null ? p.lng : p.lon) };
+                }
+                return fetchDonations();
+              });
+          })
+          .catch(()=> {
+            // fallback: browser geolocation then donations
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(pos => { memberLocation = { lat: pos.coords.latitude, lon: pos.coords.longitude }; fetchDonations(); }, () => { memberLocation = null; fetchDonations(); }, { timeout: 10000 });
+            } else {
+              memberLocation = null; fetchDonations();
+            }
+          });
+      }
+
+      // fetch donations using nearby endpoint first (server-side distance/sorting preferred)
+      function fetchDonations(){
+        // prefer /api/donations/near which we added server side (frontend older code may call /near)
+        if (memberLocation && memberLocation.lat != null && memberLocation.lon != null) {
+          const params = new URLSearchParams({ lat: memberLocation.lat, lng: memberLocation.lon, limit: '50' });
+          // try /near first; if it fails try /nearby then /open fallback
+          return fetch('/api/donations/near?' + params.toString(), { credentials:'include' })
+            .then(res => { if (!res.ok) throw new Error('no-near'); return res.json(); })
+            .then(list => {
+              list = Array.isArray(list) ? list : [];
+              nearbyList = list.map(d => normalizeDonationForClient(d)).sort((a,b)=> (a._distance||Infinity) - (b._distance||Infinity));
+              renderList();
+            })
+            .catch(err => {
+              // fallback to /nearby
+              return fetch('/api/donations/nearby?' + params.toString(), { credentials:'include' })
+                .then(r => { if (!r.ok) throw new Error('no-nearby'); return r.json(); })
+                .then(list => {
+                  list = Array.isArray(list) ? list : [];
+                  nearbyList = list.map(d => normalizeDonationForClient(d)).sort((a,b)=> (a._distance||Infinity) - (b._distance||Infinity));
+                  renderList();
+                })
+                .catch(e => {
+                  // fallback to open
+                  console.debug('Nearby failed, falling back to /api/donations/open', e);
+                  return fetch('/api/donations/open', { credentials:'include' })
+                    .then(r => r.ok ? r.json() : [])
+                    .then(list => {
+                      list = Array.isArray(list) ? list : [];
+                      nearbyList = list.map(d => normalizeDonationForClient(d)).sort((a,b)=> (a._distance||Infinity) - (b._distance||Infinity));
+                      renderList();
+                    })
+                    .catch(() => setEmptyRow('Could not load nearby donations'));
+                });
+            });
+        } else {
+          // no member coordinates — fetch open donations
+          return fetch('/api/donations/open', { credentials:'include' })
+            .then(res => res.ok ? res.json() : [])
+            .then(list => {
+              list = Array.isArray(list) ? list : [];
+              nearbyList = list.map(d => normalizeDonationForClient(d));
+              renderList();
+            })
+            .catch(() => setEmptyRow('Could not load nearby donations'));
+        }
+      }
+
+      // start loading
+      loadNearby();
+
+      // expose debug
+      window._kindora_nearby = { reload: loadNearby, list: nearbyList };
+
+      // escape helper
+      function escapeHtml(s){ if (!s && s !== 0) return ''; return String(s).replace(/[&<>"'`=\/]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[c]; }); }
+
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kindora — Member Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* preserved theme CSS (unchanged) */
+        :root{--soft-yellow:#f7e99a;--teal:#1f6a63;--muted:#5b6b63;--card:#fff5d6;--bg:#fffdf7;--rounded:14px;--shadow-soft:0 8px 40px rgba(0,0,0,0.06);--max:900px}
+        *{box-sizing:border-box}body{margin:0;font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--teal);-webkit-font-smoothing:antialiased}.container{max-width:100%;margin:18px auto;padding:0 16px}.site-header{display:flex;justify-content:space-between;align-items:center;padding:14px;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}.header-left{display:flex;align-items:center;gap:12px}.hamburger{width:46px;height:38px;border-radius:10px;border:0;background:var(--teal);display:flex;flex-direction:column;justify-content:center;padding:6px;color:#fff;cursor:pointer}.hamburger .bar{height:3px;background:#fff;border-radius:3px;margin:2px 0}.brand{display:flex;align-items:center;gap:10px}.logo-16x9{width:120px;height:36px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}.logo-16x9 img{height:100%}.app-title{font-weight:700;color:var(--teal);font-size:20px}.profile{width:44px;height:44px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06)}.profile-menu{position:absolute;right:16px;top:70px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.12);display:none;min-width:160px;z-index:200}.profile-menu a{display:block;padding:10px 12px;color:var(--muted);font-weight:700}.profile-menu a:hover{background:#f4f9f6;color:var(--teal)}.banner{background:var(--soft-yellow);border-radius:12px;padding:28px 18px;text-align:center;margin-top:14px}.banner h1{margin:0;font-size:34px;color:var(--teal);font-weight:800}.banner p{margin:8px 0 0;color:var(--muted);font-weight:600}.quick-row{display:flex;gap:18px;margin:18px 0;flex-wrap:wrap}.card-quick{flex:1;min-width:260px;background:#fff;padding:22px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.04)}.card-quick.alt{background:var(--soft-yellow)}.card-quick img{width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:12px}.card-quick h3{margin:6px 0 6px;color:var(--teal)}.card-quick p{margin:0;color:var(--muted);text-align:center}.btn-quick{margin-top:12px;background:var(--teal);color:#fff;padding:8px 14px;border-radius:12px;border:0;font-weight:700;cursor:pointer}.section-title{margin:24px 0 12px;font-size:22px;text-align:center;color:var(--teal);}.table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.04)}.table thead{background:transparent}.table th, .table td{padding:12px 14px;text-align:left;border-bottom:1px solid #f2f2f2;color:var(--muted);font-weight:600}.table th:first-child, .table td:first-child{text-align:center;width:72px}.badge{display:inline-block;padding:6px 10px;border-radius:12px;font-weight:700}.status-assigned{background:#fff1b8;color:#6b5a00}.status-picked{background:#fef3d0;color:#6b5a00}.status-pending{background:#e6f6ee;color:#2a6b52}.status-delivered{background:#e9f6f1;color:#1f6a63}.icon-circle{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--teal);color:#fff;font-weight:700}.row-avatar{width:44px;height:44px;border-radius:8px;object-fit:cover}.btn-table{padding:8px 10px;border-radius:8px;border:0;background:var(--teal);color:#fff;font-weight:700;cursor:pointer}.btn-upload{background:#1f6a63;color:#fff;padding:6px 10px;border-radius:8px;border:0;cursor:pointer}.btn-view{background:#fff;border:1px solid rgba(31,106,99,0.12);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--teal)}.btn-proof{background:transparent;border:0;color:var(--teal);text-decoration:underline;cursor:pointer;font-weight:700;padding:0}.btn-reject{background:#fff;border:1px solid rgba(220,40,40,0.12);color:#dc3545;padding:6px 8px;border-radius:8px;cursor:pointer;margin-left:8px;font-weight:700}.link-map{color:var(--teal);font-weight:700;text-decoration:none}.proof-thumb{width:44px;height:44px;border-radius:6px;object-fit:cover;cursor:pointer}.spacer{height:18px}@media (max-width:720px){.quick-row { flex-direction: row; flex-wrap: nowrap; gap: 10px; overflow-x: auto; } .card-quick { flex: 0 0 48%; min-width: 180px; } .table th, .table td { padding:10px; }}.card-quick, .card-quick.alt { text-align: center; align-items: center; }.card-quick img, .card-quick.alt img { margin-left: auto; margin-right: auto; display: block; }.mobile-menu { position: fixed; top: 0; left: 0; width: 320px; max-width: 86vw; height: 100vh; background: #fff; transform: translateX(-110%); transition: transform .28s cubic-bezier(.22,.9,.26,1), box-shadow .2s; z-index: 1200; box-shadow: 6px 0 30px rgba(0,0,0,0.14); overflow-y: auto; -webkit-overflow-scrolling: touch; } .mobile-menu.open { transform: translateX(0) !important; } .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.18); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 1100; } .overlay.show { opacity: 1; pointer-events: auto; } .mobile-header { display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid #f4f4f4; } .close-x { background:transparent; border:0; font-size:22px; cursor:poke; color:var(--muted); } .dash-btn { display:block; margin:12px 0; padding:12px; border-radius:28px; font-weight:700; text-align:center; text-decoration:none; } .dash-btn.primary { background:var(--teal); color:white; } .dash-btn.secondary { background:#ffeaa8; color:var(--teal); } .mobile-menu:focus { outline: none; }
+
+        /* modal style */
+        .modal { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(.98); background: #fff; border-radius:12px; padding:18px; box-shadow: 0 10px 40px rgba(0,0,0,0.16); z-index:1600; min-width:320px; max-width:92vw; display:none;}
+        .modal.show{ display:block; transform: translate(-50%,-50%) scale(1); }
+        .modal h3{margin:0 0 8px;color:var(--teal)}
+        .modal p{color:var(--muted); margin:6px 0}
+        .modal .row{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+        .modal .label{width:130px;font-weight:700;color:var(--teal)}
+        .modal .value{flex:1;color:var(--muted)}
+        .modal img{width:100%;max-height:420px;object-fit:cover;border-radius:8px;display:block;margin-top:10px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="site-header" role="banner">
+        <div class="header-left">
+            <button id="hamburger" class="hamburger" aria-label="Open menu" aria-expanded="false"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <div class="brand" role="img" aria-label="Kindora"><div class="logo-16x9"><img src="data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='36'%3E%3Crect width='120' height='36' fill='%23fff'/%3E%3Ctext x='6' y='24' font-family='Poppins, sans-serif' font-weight='700' font-size='20' fill='%231f6a63'%3EKindora%3C/text%3E%3C/svg%3E" alt="Kindora"></div></div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;position:relative">
+            <div id="profileBtn" class="profile" tabindex="0" aria-haspopup="true" aria-expanded="false">A</div>
+            <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
+                <a href="#" id="viewProfile" role="menuitem">Profile</a>
+                <a href="#" id="logoutBtn" role="menuitem">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+    <aside id="mobile-menu" class="mobile-menu" aria-hidden="true" role="dialog" aria-label="Menu">
+        <div class="mobile-header"><h3 style="margin:0">Menu</h3><button id="mobile-close" class="close-x" aria-label="Close menu" style="font-size:20px;background:none;border:0;cursor:pointer">✕</button></div>
+        <div class="mobile-body" style="padding:12px;">
+            <nav role="navigation" aria-label="Dashboard links">
+                <a href="membersdashboard.html" class="dash-btn primary" role="menuitem">Member Dashboard</a>
+                <a href="donardashboard.html" class="dash-btn secondary" role="menuitem">Donor Dashboard</a>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="banner" role="region" aria-label="Welcome banner">
+        <h1 id="welcomeTitle">Welcome back</h1>
+        <p>Your service spreads hope and dignity.</p>
+    </div>
+
+    <div class="quick-row" role="region" aria-label="Quick actions">
+        <div class="card-quick">
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><circle cx='32' cy='24' r='16' fill='%231f6a63'/><rect x='8' y='40' width='48' height='16' rx='8' fill='%231f6a63'/></svg>" alt="profile">
+            <h3>Profile Details</h3>
+            <p>Update your volunteer information.</p>
+            <button class="btn-quick" id="btnProfile">Update</button>
+        </div>
+
+        <div class="card-quick alt">
+            <img src="locationlogo.jpg" alt="nearby" style="width:64px;height:64px;border-radius:50%">
+            <h3>Nearby Donations</h3>
+            <p>Check donation requests near you.</p>
+            <button class="btn-quick" id="btnNearby">Check</button>
+        </div>
+    </div>
+
+    <h2 class="section-title">My Assigned Donations</h2>
+    <p style="text-align:center;color:var(--muted);margin-top:-8px">Donations currently accepted by you.</p>
+    <div style="margin-top:12px;overflow-x:auto">
+        <table class="table" id="assignedTable" role="table" aria-label="Assigned donations">
+            <thead><tr><th>Type</th><th>Donor</th><th>Status</th><th>Location</th><th>Upload</th></tr></thead>
+            <tbody id="assignedBody"></tbody>
+        </table>
+    </div>
+
+    <div class="spacer"></div>
+
+    <h2 class="section-title">History</h2>
+    <p style="text-align:center;color:var(--muted);margin-top:-8px">All donations delivered by you.</p>
+    <div style="margin-top:12px;overflow-x:auto">
+        <table class="table" id="historyTable" role="table" aria-label="Delivered donations">
+            <thead><tr><th>Type</th><th>Donor</th><th>Delivered</th><th>View</th><th>Proof</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </div>
+
+    <div style="height:36px"></div>
+</div>
+
+<input id="globalFile" type="file" accept="image/*" style="display:none">
+
+<!-- View Modal for donation details (donor-entered data + donor-uploaded image) -->
+<div id="viewModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <button id="modalClose" style="float:right;background:transparent;border:0;font-weight:700;cursor:pointer">✕</button>
+    <h3 id="modalTitle">Donation details</h3>
+    <div id="modalBody">
+        <div class="row"><div class="label">Donation ID</div><div class="value" id="m_id">—</div></div>
+        <div class="row"><div class="label">Donor</div><div class="value" id="m_donor">—</div></div>
+        <div class="row"><div class="label">Type</div><div class="value" id="m_type">—</div></div>
+        <div class="row"><div class="label">Available</div><div class="value" id="m_pickup">—</div></div>
+        <div class="row"><div class="label">Location</div><div class="value" id="m_fulladdress">—</div></div>
+        <div class="row"><div class="label">Map</div><div class="value" id="m_map"><span class="small-muted">—</span></div></div>
+        <div class="row"><div class="label">Phone</div><div class="value" id="m_phone">—</div></div>
+        <div class="row"><div class="label">Email</div><div class="value" id="m_email">—</div></div>
+
+        <!-- donor-submitted image -->
+        <div id="m_image_wrap" style="margin-top:10px;display:none">
+            <div class="label" style="width:100%;margin-bottom:6px;color:var(--teal);font-weight:700">Photo (donor uploaded)</div>
+            <img id="m_image" src="" alt="donation photo">
+        </div>
+
+        <!-- the rest of donor-entered fields (description/subtypes etc.) -->
+        <div class="row" style="margin-top:10px"><div class="label">Details</div><div class="value" id="m_details">—</div></div>
+    </div>
+</div>
+
+<!-- Proof modal (for member-uploaded proof) -->
+<div id="proofModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <button id="proofClose" style="float:right;background:transparent;border:0;font-weight:700;cursor:pointer">✕</button>
+    <h3>Proof image</h3>
+    <div style="margin-top:8px">
+        <img id="proofImg" src="" alt="proof image">
+    </div>
+</div>
+<!-- PROFILE MODAL (do NOT make it visible by default) -->
+<style>
+    /* small modal CSS — can be placed in your main <style> too */
+    .profile-modal__backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; z-index: 9999; }
+    .profile-modal__backdrop.show { display: flex; }
+    .profile-modal { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+    .profile-modal h2 { margin-top:0; color:var(--teal); }
+    .profile-modal p { margin:8px 0; color:#264b47; }
+</style>
+
+<div id="profileModalBackdrop" class="profile-modal__backdrop" aria-hidden="true">
+    <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">My Profile</h2>
+        <p><strong>Name:</strong> <span id="pm_name">-</span></p>
+        <p><strong>Email:</strong> <span id="pm_email">-</span></p>
+        <p><strong>Phone:</strong> <span id="pm_phone">-</span></p>
+        <p><strong>Role:</strong> <span id="pm_role">-</span></p>
+
+        <div style="text-align:right;margin-top:12px">
+            <button id="closeProfileModal" class="btn-ghost" style="padding:8px 14px;border:1px solid #ccc;border-radius:8px;cursor:pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* Mobile + header logic (unchanged) */
+    document.addEventListener('DOMContentLoaded', function(){
+      const hamburger = document.getElementById('hamburger'), mobileMenu = document.getElementById('mobile-menu'),
+            mobileClose = document.getElementById('mobile-close'), overlay = document.getElementById('overlay');
+      function openMenu(){ mobileMenu && mobileMenu.classList.add('open'); overlay && overlay.classList.add('show'); hamburger && hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+      function closeMenu(){ mobileMenu && mobileMenu.classList.remove('open'); overlay && overlay.classList.remove('show'); hamburger && hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+      hamburger && hamburger.addEventListener('click', e=>{ e.preventDefault(); mobileMenu && mobileMenu.classList.contains('open') ? closeMenu() : openMenu(); });
+      overlay && overlay.addEventListener('click', closeMenu);
+      if (mobileClose) mobileClose.addEventListener('click', e=>{ e.preventDefault(); closeMenu(); });
+
+      document.getElementById('btnProfile').addEventListener('click', ()=> window.location.href='membersprofile.html');
+      document.getElementById('btnNearby').addEventListener('click', ()=> window.location.href='nearbydonation.html');
+
+      (function(){
+        const profileBtn = document.getElementById('profileBtn'), profileMenu = document.getElementById('profileMenu'), logoutBtn = document.getElementById('logoutBtn');
+        if (!profileBtn || !profileMenu) return;
+        let open=false;
+        profileBtn.addEventListener('click', e=>{ e.stopPropagation(); open=!open; profileMenu.style.display=open?'block':'none'; profileBtn.setAttribute('aria-expanded',String(open));});
+        document.addEventListener('click', e=>{ if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) { open=false; profileMenu.style.display='none'; profileBtn.setAttribute('aria-expanded','false'); }});
+        if (logoutBtn) logoutBtn.addEventListener('click', ev=>{ ev.preventDefault(); fetch('/api/auth/logout',{method:'POST',credentials:'include'}).finally(()=> window.location.href='/authentication.html'); });
+      })();
+    });
+    // PROFILE modal logic (use class toggles)
+const viewProfile = document.getElementById("viewProfile");
+const modalBackdrop = document.getElementById("profileModalBackdrop");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+async function openProfileModalWithData() {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) return; // do nothing if not logged in
+    const user = await res.json();
+
+    document.getElementById("pm_name").textContent = user.fullName || user.name || '-';
+    document.getElementById("pm_email").textContent = user.email || user.username || '-';
+    document.getElementById("pm_phone").textContent = user.phoneNumber || user.phone || user.mobile || '-';
+    document.getElementById("pm_role").textContent = user.role || '-';
+
+    modalBackdrop.classList.add('show');
+    modalBackdrop.setAttribute('aria-hidden', 'false');
+  } catch (err) {
+    console.error('Failed to load profile', err);
+  }
+}
+
+function closeProfileModalFn() {
+  modalBackdrop.classList.remove('show');
+  modalBackdrop.setAttribute('aria-hidden', 'true');
+}
+
+// wiring
+if (viewProfile) {
+  viewProfile.addEventListener('click', function (e) {
+    e.preventDefault();
+    openProfileModalWithData();
+  });
+}
+if (closeProfileModal) closeProfileModal.addEventListener('click', closeProfileModalFn);
+
+// close when clicking on backdrop itself
+if (modalBackdrop) {
+  modalBackdrop.addEventListener('click', function (ev) {
+    if (ev.target === modalBackdrop) closeProfileModalFn();
+  });
+}
+
+</script>
+
+<script>
+    (function(){
+      const LS_KEY = 'kindora_member_data';
+      const DRAFTS_KEY = 'kindora_member_drafts';
+      let state = { assigned: [], history: [] };
+
+      function mapStatusToDb(s){
+        if (!s) return null;
+        const low = String(s).trim().toLowerCase();
+        if (low === 'assigned') return 'ASSIGNED';
+        if (low === 'picked' || low === 'packed') return 'PICKED';
+        if (low === 'delivered') return 'DELIVERED';
+        if (low === 'available') return 'AVAILABLE';
+        return String(s).trim().toUpperCase();
+      }
+      function statusClass(status){
+        if (!status) return 'status-assigned';
+        const s = String(status).toLowerCase();
+        if (s.includes('picked')) return 'status-picked';
+        if (s.includes('assigned')) return 'status-assigned';
+        if (s.includes('pending') || s.includes('available')) return 'status-pending';
+        if (s.includes('deliver')) return 'status-delivered';
+        return 'status-assigned';
+      }
+
+      /* --- renderAssigned & renderHistory --- */
+      function renderAssigned(){
+        const tbody = document.getElementById('assignedBody'); tbody.innerHTML = '';
+        if (!state.assigned || state.assigned.length===0){
+          tbody.innerHTML = '<tr class="row-empty"><td colspan="5" style="text-align:center;color:var(--muted)">No assigned donations.</td></tr>'; return;
+        }
+        state.assigned.forEach((row, idx)=>{
+          const tr=document.createElement('tr');
+
+          // Type
+          const tdType=document.createElement('td');
+          const icon=document.createElement('div'); icon.className='icon-circle'; icon.textContent=(row.type && row.type.length)?row.type.charAt(0).toUpperCase():'?'; tdType.appendChild(icon); tr.appendChild(tdType);
+
+          // Donor (name + id) — no donor image here
+          const tdDonor=document.createElement('td');
+          const donorText = (row.donorName || row.donor || row.donor_name || '—');
+          const donorIdText = (row.donorId || row.donor_id || row.donorUserId || '');
+          tdDonor.innerHTML = `<div style="font-weight:700">${escapeHtml(donorText)}</div>` + (donorIdText ? `<div class="small-muted">ID: ${escapeHtml(donorIdText)}</div>` : '');
+          tr.appendChild(tdDonor);
+
+          // Status + select
+          const tdStatus=document.createElement('td');
+          const span=document.createElement('span'); span.className='badge ' + statusClass(row.status); span.textContent = row.status || 'ASSIGNED'; tdStatus.appendChild(span);
+
+          // Build select options: show Delivered only if proof exists (server or local)
+          const sel=document.createElement('select'); sel.style.marginLeft='8px';
+          let opts = [{v:'',t:'Change'},{v:'Assigned',t:'Assigned'},{v:'Picked',t:'Picked'}];
+          const hasProof = !!(row.proofUrl || row.proofUrlBase);
+          if (hasProof) opts.push({v:'Delivered', t:'Delivered'});
+          sel.innerHTML = opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join('');
+          sel.value='';
+          sel.addEventListener('change', function(){ const choice=this.value; if(!choice) return;
+              if (choice === 'Delivered' && !hasProof) { alert('Please upload proof image first (Upload column) before marking Delivered.'); this.value=''; return; }
+              updateDonationStatus(row.id, choice);
+              this.value='';
+          });
+          tdStatus.appendChild(sel);
+          tr.appendChild(tdStatus);
+
+          // Location column: View button + View map link
+          const tdLoc=document.createElement('td');
+          const viewBtn=document.createElement('button'); viewBtn.type='button'; viewBtn.className='btn-view'; viewBtn.textContent='View'; viewBtn.addEventListener('click', ()=> openDonationModal(row.id)); tdLoc.appendChild(viewBtn);
+
+          const mapA=document.createElement('a'); mapA.href = (row.mapLink || buildMapLink(row)); mapA.textContent=' View map'; mapA.className='link-map'; mapA.style.marginLeft='10px'; mapA.target='_blank'; mapA.rel='noopener'; tdLoc.appendChild(mapA);
+          tr.appendChild(tdLoc);
+
+          // Upload column: member uploads proof image + Reject button if allowed
+          const tdUpload=document.createElement('td');
+          const upBtn=document.createElement('button'); upBtn.type='button'; upBtn.className='btn-upload';
+          upBtn.textContent = (row.proofUrlBase || row.proofUrl) ? 'Update' : 'Upload';
+          upBtn.addEventListener('click', ()=>{ openFilePicker().then(dataUrl=>{ if (!dataUrl) return; row.proofUrlBase = dataUrl; persistState(); if (!isNaN(Number(row.id))){ trySyncUpdate({ id:Number(row.id), status: mapStatusToDb(row.status) || 'ASSIGNED', proofBase64: dataUrl }).then(()=>{ renderAssigned(); renderHistory(); }); } else { saveDraft({ id: row.id, status: mapStatusToDb(row.status), proofBase64: dataUrl }); renderAssigned(); } }).catch(err => console.error(err)); });
+          tdUpload.appendChild(upBtn);
+
+          // show thumbnail for member-uploaded proof (only in upload column). Clicking opens proof modal (no new tab).
+          if (row.proofUrlBase) {
+            const img=document.createElement('img'); img.src=row.proofUrlBase; img.className='proof-thumb'; img.style.marginLeft='8px';
+            img.addEventListener('click', ()=> openProofModal(row.proofUrlBase));
+            tdUpload.appendChild(img);
+          } else if (row.proofUrl) {
+            const img=document.createElement('img'); img.src=row.proofUrl; img.className='proof-thumb'; img.style.marginLeft='8px';
+            img.addEventListener('click', ()=> openProofModal(row.proofUrl));
+            tdUpload.appendChild(img);
+          }
+
+          // Reject button: only allow if assigned within last 1 hour
+          const assignedTimeStr = row.assignedAt || row.assigned_at || row.updatedAt || row.createdAt || row.acceptedAt || row.accepted_at;
+          let showReject = false;
+          if (assignedTimeStr) {
+            try {
+              const asDate = new Date(assignedTimeStr);
+              if (!isNaN(asDate.getTime())) {
+                const deltaSec = (Date.now() - asDate.getTime())/1000;
+                if (deltaSec <= 3600) showReject = true;
+              }
+            } catch(e){}
+          } else {
+            // if no timestamp available — be conservative: hide reject
+            showReject = false;
+          }
+
+          if (showReject) {
+            const rejBtn = document.createElement('button'); rejBtn.type='button'; rejBtn.className='btn-reject'; rejBtn.textContent='Reject';
+            rejBtn.addEventListener('click', ()=> {
+              if (!confirm('Reject this assignment? This will unassign the donation and make it available again.')) return;
+              rejectDonation(row.id).then(ok=>{
+                if (ok) {
+                  // remove from assigned locally
+                  const idx = state.assigned.findIndex(x=>String(x.id)===String(row.id));
+                  if (idx !== -1) state.assigned.splice(idx,1);
+                  persistState();
+                  renderAssigned();
+                } else {
+                  alert('Could not reject on server. Action saved locally and will retry later.');
+                }
+              });
+            });
+            tdUpload.appendChild(rejBtn);
+          }
+
+          tr.appendChild(tdUpload);
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderHistory(){
+        const tbody=document.getElementById('historyBody'); tbody.innerHTML='';
+        if (!state.history || state.history.length===0) {
+          tbody.innerHTML = '<tr class="row-empty"><td colspan="5" style="text-align:center;color:var(--muted)">No history yet.</td></tr>'; return;
+        }
+        state.history.forEach(h=>{
+          const tr=document.createElement('tr');
+          const tdType=document.createElement('td'); const icon=document.createElement('div'); icon.className='icon-circle'; icon.textContent=(h.type && h.type.length)?h.type.charAt(0).toUpperCase():'?'; tdType.appendChild(icon); tr.appendChild(tdType);
+
+          // Donor: name only (NO donor-uploaded thumbnail here)
+          const tdDonor=document.createElement('td'); tdDonor.innerHTML = `<div style="font-weight:700">${escapeHtml(h.donor || h.donorName || '—')}</div>`; tr.appendChild(tdDonor);
+
+          const tdDel=document.createElement('td'); tdDel.textContent = h.deliveredAt || (h.createdAt ? new Date(h.createdAt).toLocaleString() : new Date().toLocaleString()); tr.appendChild(tdDel);
+
+          const tdView=document.createElement('td'); const viewBtn=document.createElement('button'); viewBtn.className='btn-view'; viewBtn.textContent='View'; viewBtn.addEventListener('click', ()=> openDonationModal(h.id)); tdView.appendChild(viewBtn); tr.appendChild(tdView);
+
+          const tdProof=document.createElement('td');
+          // Proof should be the member-uploaded image (proofUrl/proofUrlBase) — open in modal
+          if (h.proofUrl) {
+            const btn = document.createElement('button'); btn.className='btn-proof'; btn.textContent='View proof'; btn.addEventListener('click', ()=> openProofModal(h.proofUrl));
+            tdProof.appendChild(btn);
+          } else if (h.proofUrlBase) {
+            const img=document.createElement('img'); img.src=h.proofUrlBase; img.className='proof-thumb'; img.addEventListener('click', ()=> openProofModal(h.proofUrlBase));
+            tdProof.appendChild(img);
+          } else {
+            tdProof.textContent='—';
+          }
+          tr.appendChild(tdProof);
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      function escapeHtml(s){ if (!s && s !== 0) return ''; return String(s).replace(/[&<>"'`=\/]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[c]; }); }
+
+      /* file picker */
+      function openFilePicker(){ return new Promise((resolve,reject)=>{ const fileInput=document.getElementById('globalFile'); fileInput.value=null; fileInput.onchange=function(){ const f=this.files && this.files[0]; if(!f){ resolve(null); return; } const reader=new FileReader(); reader.onload=function(e){ resolve(e.target.result); }; reader.onerror=function(err){ reject(err); }; reader.readAsDataURL(f); }; fileInput.click(); }); }
+
+      function buildMapLink(full){
+        if (!full) return '#';
+        if (full.lat != null && full.lng != null) return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(full.lat + ',' + full.lng)}`;
+        const q=[full.street, full.district, full.state].filter(Boolean).join(', ');
+        if (q) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+        return '#';
+      }
+
+      // Robust fetch helper — tries multiple endpoints and treats "No static resource" / 404 as fallback
+      async function fetchDonationWithFallbacks(id) {
+        if (!id && id !== 0) return null;
+        const enc = encodeURIComponent(String(id));
+        const endpoints = [
+          `/api/donations/${enc}?includeImages=true`,
+          `/api/donations/${enc}`,
+          `/api/donations/info/${enc}?includeImages=true`,
+          `/api/donations/info/${enc}`,
+          `/api/donations/get?id=${enc}&includeImages=true`,
+          `/api/donations/get?id=${enc}`,
+          `/api/donations?id=${enc}`
+        ];
+        for (const ep of endpoints) {
+          try {
+            const resp = await fetch(ep, { credentials: 'include' });
+            if (!resp.ok) {
+              // read body to check "No static resource" message
+              const text = await resp.text().catch(()=>null);
+              const lower = (text || '').toLowerCase();
+              if (lower.includes('no static resource') || lower.includes('resource not found') || resp.status === 404) {
+                console.warn('fetchDonationWithFallbacks: endpoint returned 404-like:', ep, resp.status, text);
+                continue; // try next endpoint
+              }
+              console.warn('fetchDonationWithFallbacks: endpoint returned not ok:', ep, resp.status, text);
+              continue;
+            }
+            const json = await resp.json().catch(()=>null);
+            if (!json) { console.warn('fetchDonationWithFallbacks: invalid json from', ep); continue; }
+            if (json.error || json.message) {
+              const combined = String(json.error || '') + ' ' + String(json.message || '');
+              if (combined.toLowerCase().includes('no static resource') || resp.status === 404) {
+                console.warn('fetchDonationWithFallbacks: server-side error', ep, combined);
+                continue;
+              }
+            }
+            return json;
+          } catch (e) {
+            console.warn('fetchDonationWithFallbacks: fetch failed for', ep, e);
+            continue;
+          }
+        }
+        return null;
+      }
+
+      async function enrichDonation(donation){
+        if (!donation || donation.id == null) return donation;
+        if (isNaN(Number(donation.id))) return donation;
+        try {
+          const full = await fetchDonationWithFallbacks(donation.id);
+          if (!full) return donation;
+          donation.donor = full.donorName || full.donor_name || full.donor || donation.donor || '';
+          donation.lat = full.lat != null ? full.lat : donation.lat;
+          donation.lng = full.lng != null ? full.lng : donation.lng;
+          donation.mapLink = buildMapLink(full);
+          const images = Array.isArray(full.images) ? full.images.map(i => i.imageUrl || i.image_url).filter(Boolean) : [];
+          if (full.imageUrl) images.unshift(full.imageUrl);
+          donation.donorImages = images;
+          donation.proofUrl = full.proofUrl || donation.proofUrl || null; // server-side member proof url if provided
+          donation.locationLabel = [full.street, full.district, full.state].filter(Boolean).join(', ');
+          donation.description = full.description || full.details || donation.description || '';
+          donation.availableFrom = full.availableFrom || full.available_from || '';
+          donation.availableTo = full.availableTo || full.available_to || '';
+          donation.donorPhone = full.donorPhone || full.phone || full.phoneNumber || donation.donorPhone;
+          donation.donorEmail = full.donorEmail || full.email || donation.donorEmail;
+          donation.assignedAt = full.assignedAt || full.assigned_at || full.acceptedAt || full.accepted_at || donation.assignedAt || donation.acceptedAt;
+          return donation;
+        } catch(e){ console.warn('enrich failed', e); return donation; }
+      }
+
+      /* --- update status / sync --- */
+      function updateDonationStatus(id, newStatusLabel){
+        const idx = state.assigned.findIndex(x => String(x.id) === String(id));
+        if (idx === -1) return;
+        const dbStatus = mapStatusToDb(newStatusLabel);
+
+        const item = state.assigned[idx];
+        if (dbStatus === 'DELIVERED' && !item.proofUrlBase && !item.proofUrl){
+          alert('Please upload proof first before marking Delivered.');
+          return;
+        }
+
+        if (dbStatus === 'DELIVERED'){
+          const deliveredItem = Object.assign({}, item);
+          deliveredItem.deliveredAt = (new Date()).toLocaleString();
+          deliveredItem.status = 'DELIVERED';
+          // remove from assigned and add to top of history
+          state.assigned.splice(idx,1);
+          state.history.unshift(deliveredItem);
+          persistState();
+          trySyncUpdate({ id: Number(deliveredItem.id), status: dbStatus, proofBase64: deliveredItem.proofUrlBase || null })
+            .then(()=>{ renderAssigned(); renderHistory(); });
+          return;
+        }
+
+        // else update local status and sync
+        item.status = newStatusLabel;
+        persistState();
+        renderAssigned();
+        trySyncUpdate({ id: Number(item.id), status: dbStatus }).catch(()=>{});
+      }
+
+      function persistState(){ try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){ console.warn('persist failed', e); } }
+      function saveDraft(updateObj){ try { const drafts = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]'); drafts.push(Object.assign({ts: Date.now()}, updateObj)); localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts)); } catch(e){ console.warn('saveDraft failed', e); } }
+      function removeDraft(id){ try { const drafts = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]'); const left = drafts.filter(d => String(d.id) !== String(id)); localStorage.setItem(DRAFTS_KEY, JSON.stringify(left)); } catch(e){} }
+
+      /* trySyncUpdate expects server to return { donation:..., memberProof: { imageUrl: ... } } */
+      async function trySyncUpdate(updateObj){
+        if (isNaN(Number(updateObj.id))) { saveDraft(updateObj); return false; }
+        if (updateObj.status) updateObj.status = mapStatusToDb(updateObj.status);
+        try {
+          const res = await fetch('/api/donations/update', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateObj)
+          });
+          if (!res.ok) {
+            const txt = await res.text().catch(()=>null);
+            throw new Error(txt || `Status ${res.status}`);
+          }
+          const json = await res.json().catch(()=>null);
+          if (json) {
+            if (json.donation) mergeUpdatedDonation(json.donation, json.memberProof || null);
+            else if (json.memberProof && json.memberProof.donationId) {
+              const did = json.memberProof.donationId;
+              const r = await fetchDonationWithFallbacks(did);
+              if (r) mergeUpdatedDonation(r, json.memberProof);
+            } else if (json.id || json.updated) {
+              const did = json.id || json.updated;
+              const r = await fetchDonationWithFallbacks(did);
+              if (r) mergeUpdatedDonation(r, null);
+            }
+          }
+          removeDraft(updateObj.id);
+          return true;
+        } catch (err) {
+          console.warn('Update failed, saved to drafts', err);
+          saveDraft(updateObj);
+          return false;
+        }
+      }
+
+      /* mergeUpdatedDonation — preserves the original assigned index when updating */
+      function mergeUpdatedDonation(donation, memberProof){
+        if (!donation) return;
+        const idStr = String(donation.id);
+        const serverProofUrl = (memberProof && memberProof.imageUrl) ? memberProof.imageUrl : (donation.proofUrl || null);
+
+        // find existing index in assigned
+        const idxAssigned = state.assigned.findIndex(x => String(x.id) === idStr);
+        if (String((donation.status || '').toUpperCase()) === 'DELIVERED'){
+          // remove from assigned if exists
+          if (idxAssigned !== -1) state.assigned.splice(idxAssigned, 1);
+          // update or insert into history at top
+          const histIdx = state.history.findIndex(x => String(x.id) === idStr);
+          const entry = Object.assign({}, donation);
+          if (serverProofUrl) entry.proofUrl = serverProofUrl;
+          entry.deliveredAt = donation.deliveredAt || new Date().toLocaleString();
+          entry.status = 'DELIVERED';
+          if (histIdx !== -1) {
+            state.history[histIdx] = entry;
+          } else {
+            state.history.unshift(entry);
+          }
+          persistState(); renderAssigned(); renderHistory();
+          return;
+        }
+
+        // status is not delivered -> keep in assigned
+        const entry = Object.assign({}, donation);
+        if (serverProofUrl) entry.proofUrl = serverProofUrl;
+
+        if (idxAssigned !== -1) {
+          state.assigned[idxAssigned] = entry;
+        } else {
+          state.assigned.push(entry);
+        }
+
+        state.history = state.history.filter(x => String(x.id) !== idStr);
+
+        persistState(); renderAssigned(); renderHistory();
+      }
+
+      async function resendDrafts(){
+        try {
+          const drafts = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]');
+          if (!drafts || !drafts.length) return;
+          for (const d of drafts.slice()){
+            const idNum = Number(d.id);
+            if (isNaN(idNum)) continue;
+            try {
+              const payload = { id: idNum, status: mapStatusToDb(d.status), proofBase64: d.proofBase64 || null };
+              const res = await fetch('/api/donations/update', {
+                method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+              });
+              if (res.ok){
+                const json = await res.json().catch(()=>null);
+                if (json) mergeUpdatedDonation(json.donation || json, json.memberProof || null);
+                removeDraft(d.id);
+              }
+            } catch(e){ /* keep for later */ }
+          }
+        } catch(e){ console.debug('resendDrafts error', e); }
+      }
+
+      /* Reject donation: try /api/member/reject then fallback to /api/donations/update */
+      async function rejectDonation(donationId) {
+        if (isNaN(Number(donationId))) {
+          // Not numeric — just remove locally
+          const idx = state.assigned.findIndex(x => String(x.id) === String(donationId));
+          if (idx !== -1) state.assigned.splice(idx,1);
+          persistState(); renderAssigned();
+          return Promise.resolve(true);
+        }
+        try {
+          const res = await fetch('/api/member/reject', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ donationId: Number(donationId) })
+          });
+
+          if (res.ok) {
+            // server accepted - remove locally
+            return true;
+          }
+
+          // fetch gave non-ok: read body to decide fallback
+          const txt = await res.text().catch(()=>null);
+          // if 404 or server replies "No static resource ..." we fallback
+          const shouldFallback = res.status === 404 || (txt && String(txt).toLowerCase().includes('no static resource')) || (txt && txt.includes('No static resource'));
+
+          if (!shouldFallback) {
+            console.warn('reject: unexpected response', res.status, txt);
+            return false;
+          }
+        } catch (e) {
+          // network error or CORS — we'll fallback
+          console.warn('reject primary failed, will fallback', e);
+        }
+
+        // fallback: update donation to AVAILABLE using the existing update endpoint
+        try {
+          const payload = { id: Number(donationId), status: 'AVAILABLE' };
+          const res2 = await fetch('/api/donations/update', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res2.ok) {
+            const txt = await res2.text().catch(()=>null);
+            console.warn('fallback update failed', res2.status, txt);
+            // save as draft to retry later
+            saveDraft(payload);
+            return false;
+          }
+          // success: remove locally
+          const idx = state.assigned.findIndex(x => String(x.id) === String(donationId));
+          if (idx !== -1) state.assigned.splice(idx,1);
+          persistState(); renderAssigned();
+          return true;
+        } catch (ex) {
+          console.warn('fallback update exception', ex);
+          // save as draft
+          saveDraft({ id: Number(donationId), status: 'AVAILABLE' });
+          return false;
+        }
+      }
+
+      async function loadData(){
+        try {
+          let assignedResp = await fetch('/api/member/assignments', { credentials: 'include' });
+          if (!assignedResp.ok) assignedResp = await fetch('/api/member/assigned', { credentials: 'include' });
+          if (!assignedResp.ok) throw new Error('no-backend-assigned');
+          const assigned = await assignedResp.json();
+
+          let historyResp = await fetch('/api/member/history', { credentials: 'include' });
+          const history = historyResp.ok ? await historyResp.json() : [];
+
+          // keep only non-delivered in assigned (server truth)
+          const assignedFiltered = Array.isArray(assigned) ? assigned.filter(a => String((a.status || '').toUpperCase()) !== 'DELIVERED') : [];
+          const historyFiltered = Array.isArray(history) ? history : [];
+
+          state.assigned = assignedFiltered;
+          state.history = historyFiltered;
+
+          // enrich each using server details (images, coords)
+          await Promise.all(state.assigned.map(async (d,i)=>{ const enriched = await enrichDonation(d); state.assigned[i] = Object.assign({}, d, enriched); }));
+          await Promise.all(state.history.map(async (d,i)=>{ const enriched = await enrichDonation(d); state.history[i] = Object.assign({}, d, enriched); }));
+
+          // merge local drafts with DELIVERED so user sees them immediately
+          try {
+            const drafts = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]') || [];
+            for (const dr of drafts) {
+              if (mapStatusToDb(dr.status) === 'DELIVERED') {
+                const idx = state.assigned.findIndex(a => String(a.id) === String(dr.id));
+                if (idx !== -1){
+                  const item = Object.assign({}, state.assigned[idx]);
+                  item.deliveredAt = (new Date()).toLocaleString();
+                  if (dr.proofBase64) item.proofUrlBase = dr.proofBase64;
+                  state.history.unshift(item);
+                  state.assigned.splice(idx,1);
+                }
+              } else if (dr.proofBase64) {
+                // apply local proof preview to assigned item (preserve position)
+                const idx2 = state.assigned.findIndex(a => String(a.id) === String(dr.id));
+                if (idx2 !== -1) state.assigned[idx2].proofUrlBase = dr.proofBase64;
+              } else if (mapStatusToDb(dr.status) === 'AVAILABLE') {
+                // if a previously-rejected draft exists, remove from assigned locally
+                const idx3 = state.assigned.findIndex(a => String(a.id) === String(dr.id));
+                if (idx3 !== -1) state.assigned.splice(idx3,1);
+              }
+            }
+          } catch(e){}
+
+          persistState();
+        } catch(err){
+          try {
+            const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+            if (saved && (saved.assigned || saved.history)) {
+              state.assigned = saved.assigned || [];
+              state.history = saved.history || [];
+            } else {
+              state = { assigned: [], history: [] };
+            }
+          } catch(e){ state = { assigned: [], history: [] }; }
+        } finally {
+          renderAssigned(); renderHistory();
+        }
+      }
+
+      function populateMe(){
+        fetch('/api/auth/me', { credentials:'include' }).then(res=>{
+          if (!res.ok) throw new Error('no-auth'); return res.json();
+        }).then(data=>{
+          const welcome=document.getElementById('welcomeTitle');
+          const name = data.fullName || data.full_name || data.name || data.email || '';
+          if (welcome && name) welcome.textContent = 'Welcome back, ' + name;
+          const profileBtn=document.getElementById('profileBtn');
+          if (profileBtn) { const initial = (data.initial || (name ? name.charAt(0).toUpperCase() : 'A')); profileBtn.textContent = initial; }
+        }).catch(()=>{});
+      }
+
+      /* Modal logic */
+      const viewModal = document.getElementById('viewModal'); const viewClose = document.getElementById('modalClose');
+      const setField=(id,text)=>{ const el=document.getElementById(id); if(el) el.textContent=(text===undefined||text===null)?'—':text; };
+      const m_image_wrap = document.getElementById('m_image_wrap'); const m_image = document.getElementById('m_image');
+
+      async function openDonationModal(id){
+        if (!id) return;
+        viewModal.setAttribute('aria-hidden','false'); viewModal.classList.add('show');
+        setField('m_id','Loading...'); setField('m_donor',''); setField('m_type',''); setField('m_pickup',''); setField('m_fulladdress',''); setField('m_map',''); setField('m_phone',''); setField('m_email',''); setField('m_details','-'); m_image_wrap.style.display='none'; m_image.src='';
+
+        try {
+          if (!isNaN(Number(id))) {
+            const obj = await fetchDonationWithFallbacks(id);
+            if (!obj) {
+              const local = state.assigned.find(x=>String(x.id)===String(id)) || state.history.find(x=>String(x.id)===String(id));
+              if (local) { populateModal(local); return; }
+              setField('m_id','Not found');
+              return;
+            }
+            populateModal(obj);
+            return;
+          }
+          const local = state.assigned.find(x=>String(x.id)===String(id)) || state.history.find(x=>String(x.id)===String(id));
+          if (local) { populateModal(local); return; }
+          setField('m_id','Not found');
+        } catch(e){
+          const local = state.assigned.find(x=>String(x.id)===String(id)) || state.history.find(x=>String(x.id)===String(id));
+          if (local) populateModal(local); else setField('m_id','Not found');
+        }
+      }
+
+      function populateModal(obj){
+        const d = obj || {};
+        setField('m_id', d.id || '—');
+        setField('m_donor', d.donorName || d.donor || d.donor_name || '—');
+        setField('m_type', d.type || '—');
+
+        // Availability: from — to
+        const from = d.availableFrom || d.available_from || d.availableFromText || d.available_from_text || d.fromTime || null;
+        const to = d.availableTo || d.available_to || d.availableToText || d.available_to_text || d.toTime || null;
+        if (from && to) setField('m_pickup', (from + '  —  ' + to));
+        else if (from) setField('m_pickup', from);
+        else if (to) setField('m_pickup', to);
+        else setField('m_pickup','—');
+
+        const full = [d.street || d.locationLabel || '', d.district || '', d.landmark || ''].filter(Boolean).join(', ');
+        setField('m_fulladdress', full || '—');
+        const mapContainer = document.getElementById('m_map'); mapContainer.innerHTML='';
+        if (d.lat != null && d.lng != null){
+          const a=document.createElement('a'); a.href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.lat+','+d.lng)}`; a.target='_blank'; a.rel='noopener'; a.textContent='Open in maps'; a.className='small-muted'; mapContainer.appendChild(a);
+        } else if (full) {
+          const a=document.createElement('a'); a.href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(full)}`; a.target='_blank'; a.rel='noopener'; a.textContent='Open in maps'; a.className='small-muted'; mapContainer.appendChild(a);
+        } else { mapContainer.innerHTML = '<span class="small-muted">No coordinates provided</span>'; }
+
+        setField('m_phone', d.donorPhone || d.phone || d.phoneNumber || '—');
+        setField('m_email', d.donorEmail || d.email || d.userEmail || '—');
+        setField('m_details', d.description || d.details || d.subTypes || d.sub_types || '—');
+
+        // donor-uploaded image: prefer images array, then imageUrl
+        let imgUrl = null;
+        if (Array.isArray(d.images) && d.images.length) imgUrl = d.images[0].imageUrl || d.images[0].image_url;
+        if (!imgUrl && d.imageUrl) imgUrl = d.imageUrl;
+        if (!imgUrl && d.previewUrl) imgUrl = d.previewUrl;
+        if (!imgUrl && d.donorImageUrl) imgUrl = d.donorImageUrl;
+        if (imgUrl) { m_image.src = imgUrl; m_image_wrap.style.display='block'; } else { m_image_wrap.style.display='none'; }
+      }
+
+      function closeModal(){ if (!viewModal) return; viewModal.classList.remove('show'); viewModal.setAttribute('aria-hidden','true'); }
+      if (viewClose) viewClose.addEventListener('click', closeModal);
+
+      /* Proof modal */
+      const proofModal = document.getElementById('proofModal'); const proofClose = document.getElementById('proofClose'); const proofImg = document.getElementById('proofImg');
+      function openProofModal(url){
+        if (!url) return;
+        proofImg.src = url;
+        proofModal.setAttribute('aria-hidden','false'); proofModal.classList.add('show');
+      }
+      function closeProof(){ if (!proofModal) return; proofModal.classList.remove('show'); proofModal.setAttribute('aria-hidden','true'); proofImg.src=''; }
+      if (proofClose) proofClose.addEventListener('click', closeProof);
+
+      /* startup */
+      (function init(){ populateMe(); resendDrafts(); loadData(); })();
+
+      window._kindora = { state, persistState, trySyncUpdate, resendDrafts, openDonationModal };
+    })();
+</script>
+</body>
+</html>

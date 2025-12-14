@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kindora — Auth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+          --soft-yellow:#f7e99a;
+          --teal:#1f6a63;
+          --muted:#5b6b63;
+          --card:#fff5d6;
+          --bg:#fffdf7;
+          --rounded:14px;
+          --shadow-soft:0 8px 40px rgba(0,0,0,0.06);
+          --max:720px;
+          --header-h:72px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--teal)}
+        /* page header */
+        .header-wrap{padding:14px 18px}
+        .site-header{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.04);padding:12px 16px}
+        .header-left{display:flex;align-items:center;gap:12px}
+        .hamburger{width:44px;height:38px;border-radius:10px;border:0;background:var(--teal);display:flex;flex-direction:column;justify-content:center;padding:6px;color:#fff;cursor:pointer}
+        .hamburger .bar{height:3px;background:#fff;border-radius:3px;margin:2px 0}
+        .brand{display:flex;align-items:center;gap:10px}
+        .logo-16x9{width:80px;height:80px;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .logo-16x9 img{width:90%;height:80%;object-fit:cover;display:block}
+        .app-title{font-weight:700;color:var(--teal);font-size:25px}
+
+        /* side sheet */
+        .side-sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.28);display:none;z-index:60}
+        .side-sheet{position:fixed;left:0;top:0;height:100%;width:280px;background:#fff;box-shadow:0 8px 36px rgba(0,0,0,.18);transform:translateX(-110%);transition:transform .28s ease;z-index:70;padding:18px;border-right:1px solid #f0f0f0}
+        .side-sheet.open{transform:translateX(0)}
+        .side-sheet h3{margin:0 0 12px;color:var(--teal)}
+        .side-sheet .nav-btn{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:var(--teal);color:#fff;text-align:center;margin-bottom:10px;font-weight:700;text-decoration:none}
+
+        /* center area */
+        .center-wrap{min-height:calc(100vh - 110px);display:flex;align-items:center;justify-content:center;padding:18px}
+
+        /* card - centered and limited width */
+        .card{background:#fff;padding:22px;border-radius:12px;box-shadow:var(--shadow-soft);width:100%;max-width:680px}
+        .inner{max-width:520px;margin:0 auto}
+
+        /* typography + forms */
+        h2{margin:0 0 12px;color:var(--teal);font-size:22px}
+        .form-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+        .input, .select {flex:1;padding:10px;border-radius:10px;border:1px solid #e6e4d8;font-size:15px}
+        .small{flex:0 0 48%}
+        .label{font-weight:700;color:var(--teal);margin-bottom:6px;display:block}
+        .btn{background:var(--teal);color:#fff;padding:10px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+        .btn-ghost{background:transparent;border:1px solid rgba(31,106,99,0.12);color:var(--teal);padding:8px 12px;border-radius:10px}
+        .note{color:var(--muted);font-size:14px;margin-top:6px}
+        .err{color:#d9534f;font-weight:700;font-size:13px;margin-top:6px;display:none}
+        .success{color:#2a8f73;font-weight:700;font-size:14px;margin-top:6px;display:none}
+
+        /* profile view */
+        .profile-row{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+        .avatar{width:72px;height:72px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:800;font-size:22px}
+        .field{background:#fffef6;padding:10px;border-radius:10px;border:1px solid #f4f4f4;flex:1}
+
+        /* responsive */
+        @media (max-width:720px){
+          .inner{max-width:90vw}
+          .small{flex:0 0 100%}
+          .side-sheet{width:84%}
+        }
+    </style>
+</head>
+<body>
+<div class="header-wrap">
+    <header class="site-header" role="banner">
+        <div class="header-left">
+            <button id="hamburger" class="hamburger" aria-label="Open menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <div class="brand" aria-label="Kindora">
+                <div class="logo-16x9"><img src="logo2.jpg" alt="Kindora"></div>
+                <div class="app-title">Kindora</div>
+            </div>
+        </div>
+
+        <!-- intentionally left empty: no sign-in button in top-right per request -->
+        <div style="width:44px;height:44px"></div>
+    </header>
+</div>
+
+<!-- side sheet + backdrop -->
+<div id="backdrop" class="side-sheet-backdrop" aria-hidden="true"></div>
+<aside id="sideSheet" class="side-sheet" aria-hidden="true">
+    <h3>Menu</h3>
+    <a href="member-dashboard.html" class="nav-btn">Member Dashboard</a>
+    <a href="donor-dashboard.html" class="nav-btn">Donor Dashboard</a>
+
+</aside>
+
+<!-- centered auth card -->
+<div class="center-wrap" role="main">
+    <div class="card" aria-labelledby="authTitle">
+        <div class="inner">
+            <h2 id="authTitle">Create account</h2> <!-- this heading will change to login when toggled -->
+            <!-- LOGIN FORM -->
+            <div id="loginForm">
+                <div class="form-row"><input id="loginEmail" class="input" type="email" placeholder="Email" required aria-label="Email"></div>
+                <div class="form-row"><input id="loginPassword" class="input" type="password" placeholder="Password" required aria-label="Password"></div>
+                <div style="display:flex;gap:10px;align-items:center">
+                    <button id="loginBtn" class="btn" type="button">Login</button>
+                    <button id="showRegister" class="btn-ghost" type="button">Create account</button>
+                </div>
+                <div id="loginMsg" class="err" role="alert" aria-live="polite"></div>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" style="display:none" onsubmit="return false;">
+
+
+                <div class="form-row">
+                    <input id="regName" class="input" placeholder="Full name" required aria-label="Full name">
+                </div>
+
+                <div class="form-row">
+                    <input id="regPhone" class="input" type="tel" placeholder="Phone number" required aria-label="Phone number">
+                </div>
+
+                <div class="form-row">
+                    <input id="regEmail" class="input" type="email" placeholder="Email" required aria-label="Email">
+                </div>
+
+                <div class="form-row">
+                    <input id="regPassword" class="input small" type="password" placeholder="Password" required aria-label="Password">
+                    <input id="regConfirm" class="input small" type="password" placeholder="Confirm password" required aria-label="Confirm password">
+                </div>
+
+                <div class="form-row" style="align-items:center">
+                    <label style="margin-right:8px;font-weight:700;color:var(--teal)">Preferred (choose one or both):</label>
+                    <label style="display:flex;gap:6px;align-items:center"><input id="prefDonor" type="checkbox" aria-label="Preferred donor"> Donor</label>
+                    <label style="display:flex;gap:6px;align-items:center"><input id="prefMember" type="checkbox" aria-label="Preferred member"> Member</label>
+                </div>
+
+                <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+                    <button id="registerBtn" class="btn" type="button">Register</button>
+                    <button id="backToLogin" class="btn-ghost" type="button">Back to login</button>
+                </div>
+
+                <div id="regMsg" class="err" role="alert" aria-live="polite"></div>
+                <div id="regSuccess" class="success" role="status" aria-live="polite"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ======================
+       Configuration
+       ====================== */
+    const API_BASE = window.location.origin; // change if your backend runs elsewhere
+
+    /* ======================
+       Element helpers
+       ====================== */
+    const $ = id => document.getElementById(id);
+    const show = el => { if (!el) return; el.style.display = 'block'; }
+    const hide = el => { if (!el) return; el.style.display = 'none'; }
+
+    // keep only user storage (we don't store token because cookie is HttpOnly)
+    function setUser(u){ localStorage.setItem('kindoraUser', JSON.stringify(u)); }
+    function getUser(){ try { return JSON.parse(localStorage.getItem('kindoraUser')||'null'); } catch(e){ return null; } }
+    function clearUser(){ localStorage.removeItem('kindoraUser'); }
+
+    /* ======================
+       Side sheet behavior
+       ====================== */
+    const hamburger = $('hamburger');
+    const sideSheet = $('sideSheet');
+    const backdrop = $('backdrop');
+
+    function openSheet(){
+      sideSheet.classList.add('open');
+      backdrop.style.display = 'block';
+      sideSheet.setAttribute('aria-hidden','false');
+      backdrop.setAttribute('aria-hidden','false');
+    }
+    function closeSheet(){
+      sideSheet.classList.remove('open');
+      backdrop.style.display = 'none';
+      sideSheet.setAttribute('aria-hidden','true');
+      backdrop.setAttribute('aria-hidden','true');
+    }
+
+    hamburger.addEventListener('click', () => {
+      // toggle
+      if (sideSheet.classList.contains('open')) closeSheet(); else openSheet();
+    });
+    backdrop.addEventListener('click', closeSheet);
+
+    /* ======================
+       Form toggles
+       ====================== */
+    $('showRegister').addEventListener('click', () => {
+      hide($('loginForm')); show($('registerForm')); $('authTitle').textContent = 'Create account';
+    });
+    $('backToLogin').addEventListener('click', () => {
+      show($('loginForm')); hide($('registerForm')); $('authTitle').textContent = 'Login to Kindora';
+    });
+
+    /* ======================
+       Helpers for cookie requests
+       Note: credentials: 'include' is required so browser sends/receives HttpOnly cookie.
+       ====================== */
+    const fetchWithCreds = (url, opts={}) => {
+      opts.credentials = 'include';
+      return fetch(url, opts);
+    }
+
+   /* ======================
+   Registration (calls backend)
+   ====================== */
+$('registerBtn').addEventListener('click', async () => {
+  $('regMsg').style.display = 'none';
+  $('regSuccess').style.display = 'none';
+
+  const fullName = $('regName').value.trim();
+  const phoneNumber = $('regPhone').value.trim();
+  const email = $('regEmail').value.trim().toLowerCase();
+  const password = $('regPassword').value;
+  const confirm = $('regConfirm').value;
+  const prefDonor = $('prefDonor').checked;
+  const prefMember = $('prefMember').checked;
+
+  // 1️⃣ Mandatory fields
+  if (!fullName || !phoneNumber || !email || !password || !confirm) {
+    $('regMsg').textContent = 'Please fill all mandatory fields.';
+    $('regMsg').style.display = 'block';
+    return;
+  }
+
+  // 2️⃣ Phone number validation (exactly 10 digits)
+  if (!/^\d{10}$/.test(phoneNumber)) {
+    $('regMsg').textContent = 'Phone number must be exactly 10 digits.';
+    $('regMsg').style.display = 'block';
+    return;
+  }
+
+  // 3️⃣ Gmail-only email validation
+  if (!email.endsWith('@gmail.com')) {
+    $('regMsg').textContent = 'Only Gmail addresses (@gmail.com) are allowed.';
+    $('regMsg').style.display = 'block';
+    return;
+  }
+
+  // 4️⃣ Password checks
+  if (password !== confirm) {
+    $('regMsg').textContent = 'Passwords do not match.';
+    $('regMsg').style.display = 'block';
+    return;
+  }
+
+  if (password.length < 6) {
+    $('regMsg').textContent = 'Password should be at least 6 characters.';
+    $('regMsg').style.display = 'block';
+    return;
+  }
+
+  // 5️⃣ Role selection
+  if (!prefDonor && !prefMember) {
+    $('regMsg').textContent = 'Choose at least one preferred option (Donor / Member).';
+    $('regMsg').style.display = 'block';
+    return;
+  }
+
+  // prepare role string
+  const roles = [];
+  if (prefDonor) roles.push('donor');
+  if (prefMember) roles.push('member');
+  const roleStr = roles.join(',');
+
+  const payload = {
+    fullName,
+    email,
+    password,
+    role: roleStr,
+    phoneNumber
+  };
+
+  try {
+    const res = await fetchWithCreds(API_BASE + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data.success === false) {
+      $('regMsg').textContent =
+        data.message || 'Registration failed (status ' + res.status + ')';
+      $('regMsg').style.display = 'block';
+      return;
+    }
+
+    $('regSuccess').textContent =
+      data.message || 'Registered successfully — redirecting to home...';
+    $('regSuccess').style.display = 'block';
+
+    try {
+      const meRes = await fetchWithCreds(API_BASE + '/api/auth/me', { method: 'GET' });
+      if (meRes.ok) {
+        const userObj = await meRes.json().catch(() => null);
+        if (userObj) setUser(userObj);
+      }
+    } catch (e) {}
+
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 900);
+
+  } catch (err) {
+    console.error('Register error', err);
+    $('regMsg').textContent =
+      'Unable to reach server. Make sure backend is running.';
+    $('regMsg').style.display = 'block';
+  }
+});
+
+    /* ======================
+       Login (calls backend)
+       ====================== */
+    $('loginBtn').addEventListener('click', async () => {
+      $('loginMsg').style.display = 'none';
+      const email = $('loginEmail').value.trim().toLowerCase();
+      const password = $('loginPassword').value;
+      if (!email || !password) { $('loginMsg').textContent = 'Enter email and password.'; $('loginMsg').style.display = 'block'; return; }
+
+      try {
+        const res = await fetchWithCreds(API_BASE + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json().catch(()=>({}));
+        if (res.status === 401 || data.success === false) {
+          $('loginMsg').textContent = data.message || 'Invalid email or password';
+          $('loginMsg').style.display = 'block';
+          return;
+        }
+
+        // login success — backend set cookie; now request /api/auth/me to get user profile
+        try {
+          const meRes = await fetchWithCreds(API_BASE + '/api/auth/me', { method: 'GET' });
+          if (meRes.ok) {
+            const userObj = await meRes.json().catch(()=>null);
+            if (userObj) setUser(userObj);
+          }
+        } catch (e) { /* ignore */ }
+
+        // redirect to home (index.html)
+        window.location.href = 'index.html';
+      } catch (err) {
+        console.error('Login error', err);
+        $('loginMsg').textContent = 'Unable to reach server. Make sure backend is running.';
+        $('loginMsg').style.display = 'block';
+      }
+    });
+
+    /* ======================
+       On load: check server for existing auth via cookie
+       If authorized -> redirect to index
+       ====================== */
+    (async function checkAuthOnLoad(){
+      // call /api/auth/me with credentials; if it returns user, we consider logged in
+      try {
+        const r = await fetchWithCreds(API_BASE + '/api/auth/me', { method: 'GET' });
+        if (r.ok) {
+          const u = await r.json().catch(()=>null);
+          if (u && u.email) {
+            setUser(u); // store minimal profile for UI
+            // user already logged in — go to home page
+            window.location.href = 'index.html';
+          }
+        }
+      } catch (e) {
+        // ignore network errors on load
+      }
+    })();
+</script>
+</body>
+</html>
+

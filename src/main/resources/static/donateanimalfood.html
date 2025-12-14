@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kindora — Donate for Animals</title>
+    <style>
+        /* Theme tokens (same palette as your site) */
+        :root{
+          --soft-yellow:#f7e99a;
+          --teal:#1f6a63;
+          --muted:#5b6b63;
+          --card:#fff5d6;
+          --bg:#fffdf7;
+          --max:720px;
+          --rounded:14px;
+          --shadow-soft:0 8px 40px rgba(0,0,0,0.06);
+          --input-radius:10px;
+          --accent-btn-radius:28px;
+          --err:#d9534f;
+          --font-sans:"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        /* Base reset */
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+        a{color:inherit;text-decoration:none}
+        .container{max-width:100%;margin:20px auto;padding:0 16px}
+
+        /* Header */
+        .site-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+        .header-left{display:flex;align-items:center;gap:12px}
+        .hamburger{width:44px;height:38px;border-radius:10px;border:0;background:var(--teal);display:flex;flex-direction:column;justify-content:center;padding:6px;color:#fff;cursor:pointer}
+        .hamburger .bar{height:3px;background:#fff;border-radius:3px;margin:2px 0}
+        .brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
+        .logo-16x9{width:90px;height:50px;border-radius:8px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+        .logo-16x9 img{width:100%;height:100%;object-fit:cover;display:block}
+        .app-title{font-weight:700;color:var(--teal);font-size:20px}
+
+        /* profile */
+        .profile-wrap{position:relative}
+        .profile{width:42px;height:42px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+        .profile-menu{position:absolute;right:0;top:54px;background:#fff;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.12);overflow:hidden;display:none;min-width:160px}
+        .profile-menu a{display:block;padding:10px 12px;color:var(--muted);font-weight:700}
+        .profile-menu a:hover{background:#f4f9f6;color:var(--teal)}
+
+        /* Mobile menu */
+        .mobile-menu{position:fixed;left:0;top:0;height:100vh;width:320px;max-width:86vw;background:#fff;transform:translateX(-120%);transition:transform .28s;box-shadow:6px 0 30px rgba(0,0,0,0.14);z-index:200;border-radius:0 12px 12px 0;overflow:auto;padding:16px}
+        .mobile-menu.open{transform:translateX(0)}
+        .mobile-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:6px;border-bottom:1px solid #f4f4f4}
+        .dash-btn{display:block;padding:12px;border-radius:28px;text-align:center;color:#fff;font-weight:700;margin-bottom:10px}
+        .dash-btn.primary{background:var(--teal)}
+        .dash-btn.secondary{background:#ffeaa8;color:var(--teal)}
+        .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:190}
+        .overlay.show{opacity:1;pointer-events:auto}
+
+        /* Card + banner */
+        /* Main form card */
+        .card{
+          background:#fff;
+          padding:18px;
+          margin-top:0;
+          border-radius:0;   /* removes round card corners */
+          box-shadow:none;   /* removes the floating card look */
+          width:100%;
+        }
+        .banner{background:var(--soft-yellow);border-radius:12px;padding:22px 18px;text-align:center;margin-bottom:10px}
+        .banner h1{margin:0;font-size:34px;color:var(--teal);font-weight:800}
+        .banner p{margin:10px 0 0;color:var(--muted);font-weight:600}
+
+        /* Form */
+        .form-section{margin-top:10px}
+        .section-label{font-weight:800;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:16px}
+        .section-label .req{color:var(--err);font-weight:900}
+
+        /* inputs */
+        .full-input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6e4d8;background:transparent;font-size:16px}
+        .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+        .input,.select,.time{flex:1;padding:10px;border-radius:var(--input-radius);border:1px solid #e6e4d8;background:transparent;font-size:15px}
+        .input::placeholder{color:#9aa39c}
+        .small{flex:0 0 34%}
+        .small-2{flex:0 0 30%}
+        .select{flex:0 0 160px}
+
+        /* upload */
+        .upload-box{margin-top:10px;border-radius:12px;border:2px dashed rgba(31,106,99,0.12);padding:18px;text-align:center;background:#fffaf0;color:var(--muted);cursor:pointer;display:block}
+        .upload-preview{max-width:100%;border-radius:10px;margin-top:8px;display:none}
+
+        /* submit */
+        .submit-wrap{text-align:center;margin-top:18px}
+        .btn-submit{background:var(--teal);color:#fff;padding:14px 28px;border-radius:28px;border:0;font-weight:800;font-size:20px;box-shadow:0 8px 18px rgba(0,0,0,0.12);cursor:pointer}
+
+        /* errors */
+        .field-error{border-color:var(--err) !important;box-shadow:0 0 0 3px rgba(217,83,79,0.06) !important}
+        .err-msg{color:var(--err);font-size:13px;margin-top:6px}
+
+        /* thanks modal */
+        .thanks-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.98);background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);z-index:300;min-width:280px;max-width:90vw;display:none;text-align:center}
+        .thanks-modal.show{display:block}
+        .thanks-modal h3{margin:0;color:var(--teal)}
+        .thanks-modal p{color:var(--muted);margin:10px 0 0}
+
+        /* small screens */
+        @media (max-width:520px){
+          .container{padding:0 12px}
+          .banner h1{font-size:28px}
+          .small{flex:0 0 48%}
+          .small-2{flex:0 0 48%}
+        }
+
+        /* remove underlines globally */
+        a, a:hover, a:active, a:focus { text-decoration:none; outline:none }
+    </style>
+</head>
+<body>
+
+<!-- overlay -->
+<div id="overlay" class="overlay" aria-hidden="true"></div>
+
+<!-- mobile menu -->
+<aside id="mobile-menu" class="mobile-menu" aria-hidden="true" aria-label="Dashboard menu">
+    <div class="mobile-header">
+        <strong>Menu</strong>
+        <button id="mobile-close" aria-label="Close menu" style="font-size:20px;background:none;border:0;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:12px">
+        <a class="dash-btn primary" href="membersdashboard.html">Member Dashboard</a>
+        <a class="dash-btn secondary" href="donardashboard.html">Donor Dashboard</a>
+    </div>
+</aside>
+
+<div class="container">
+    <!-- Header -->
+    <header class="site-header" role="banner" aria-label="Top">
+        <div class="header-left">
+            <button id="hamburger" class="hamburger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+            </button>
+
+            <div class="brand" role="img" aria-label="Kindora logo">
+                <div class="logo-16x9"><img src="logo2.jpg" alt="Kindora logo"></div>
+                <div class="app-title">Kindora</div>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px">
+            <div class="profile-wrap">
+                <div id="profileBtn" class="profile" tabindex="0" aria-haspopup="true" aria-expanded="false" aria-label="User menu">A</div>
+                <div id="profileMenu" class="profile-menu" role="menu" aria-hidden="true">
+                    <a href="#" id="viewProfile" role="menuitem">Profile</a>
+
+                    <a href="/logout" id="logoutBtn" role="menuitem">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main card -->
+    <main class="card" role="main" aria-labelledby="pageTitle">
+        <div class="banner" role="region">
+            <h1 id="pageTitle">Donate for Animals</h1>
+            <p>Share leftover food safely with street animals.</p>
+        </div>
+
+        <!-- enctype multipart for image upload -->
+        <form id="animalsForm" novalidate enctype="multipart/form-data">
+            <!-- Animals suitable for (required) -->
+            <div class="form-section">
+                <label class="section-label">Animal(s) this food is suitable for <span class="req" aria-hidden="true">*</span></label>
+                <!-- DB column name: animal_suitable_for -->
+                <input type="text" name="animal_suitable_for" id="animals" class="full-input" placeholder="e.g. dogs, cats, pigeons" required aria-required="true">
+                <div id="animalsErr" class="err-msg" style="display:none">Please enter which animals this food is for.</div>
+            </div>
+
+            <!-- Food type (optional) -->
+            <div class="form-section">
+                <label class="section-label">Food type</label>
+                <!-- DB column name: animal_food_type -->
+                <input type="text" name="animal_food_type" id="foodType" class="full-input" placeholder="Vegetables, grains, milk, biscuits, cooked rice, etc.">
+            </div>
+
+            <!-- Availability timings (required) -->
+            <div class="form-section">
+                <label class="section-label">Availability Timings <span class="req" aria-hidden="true">*</span></label>
+                <div class="row">
+                    <input type="time" name="fromTime" class="time small" required aria-required="true">
+                    <input type="time" name="toTime" class="time small" required aria-required="true">
+                </div>
+                <div id="timeErr" class="err-msg" style="display:none">Please select both timings.</div>
+            </div>
+
+            <!-- Pickup location (required) -->
+            <div class="form-section">
+                <label class="section-label">Pickup location <span class="req" aria-hidden="true">*</span></label>
+                <div class="row" style="margin-bottom:8px">
+                    <!-- DB column name: pin_code -->
+                    <input type="text" name="pin_code" class="input small" placeholder="Pincode" required aria-required="true">
+                    <input type="text" name="street" class="input" placeholder="Street / Area" required aria-required="true">
+                    <input type="text" name="district" class="input small" placeholder="District" required aria-required="true">
+                </div>
+                <div class="row">
+                    <input type="text" name="state" class="input small" placeholder="State" required aria-required="true">
+                    <input type="text" name="landmark" class="input" placeholder="Landmark (optional)">
+                    <button type="button" id="useLocation" class="dash-btn" style="padding:10px 12px;border-radius:12px;background:var(--teal);color:#fff;border:0">Use location</button>
+                </div>
+                <div id="locationErr" class="err-msg" style="display:none">Please fill all pickup location fields.</div>
+            </div>
+
+            <!-- Latitude / Longitude (filled by Use location). Do NOT overwrite Street/Area. -->
+            <div class="row" style="margin-top:8px; gap:8px; align-items:center;">
+                <input type="text" name="lat" id="latField" class="input small" placeholder="Latitude" readonly aria-readonly="true" />
+                <input type="text" name="lng" id="lngField" class="input small" placeholder="Longitude" readonly aria-readonly="true" />
+                <div style="font-size:13px;color:var(--muted);">Click <strong>Use location</strong> to auto-fill</div>
+            </div>
+            <!-- KEEP locationErr element (used for validation messages) below the row if present -->
+
+
+            <!-- Upload photo (required) - form field name: photo (saved into donation_images by backend) -->
+            <div class="form-section">
+                <label class="section-label">Upload food photo <span class="req" aria-hidden="true">*</span></label>
+                <label for="photo" class="upload-box" id="uploadBoxAnimals" tabindex="0">
+                    <div id="uploadTextAnimals">Tap to upload a photo showing the food for animals</div>
+                    <input id="photo" name="photo" type="file" accept="image/*" style="display:none" required aria-required="true">
+                    <img id="photoPreviewAnimals" class="upload-preview" alt="Preview">
+                </label>
+                <div id="photoErr" class="err-msg" style="display:none">Please upload a photo.</div>
+            </div>
+
+            <div class="submit-wrap">
+                <button type="submit" class="btn-submit">Submit Donation</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<!-- Thanks modal -->
+<div id="thanks" class="thanks-modal" role="dialog" aria-modal="true" aria-labelledby="thanksTitle" aria-hidden="true">
+    <h3 id="thanksTitle">Very happy to donate!</h3>
+    <p>We will notify nearby members — they will reach out to pick up the food.</p>
+    <div style="margin-top:12px">
+        <button id="thanksClose" style="background:var(--teal);color:#fff;padding:10px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer">Close</button>
+    </div>
+</div>
+<!-- PROFILE MODAL (do NOT make it visible by default) -->
+<style>
+    /* small modal CSS — can be placed in your main <style> too */
+    .profile-modal__backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); align-items: center; justify-content: center; z-index: 9999; }
+    .profile-modal__backdrop.show { display: flex; }
+    .profile-modal { background:#fff; padding:20px; border-radius:12px; width:90%; max-width:420px; box-shadow:0 12px 40px rgba(0,0,0,0.25); }
+    .profile-modal h2 { margin-top:0; color:var(--teal); }
+    .profile-modal p { margin:8px 0; color:#264b47; }
+</style>
+
+<div id="profileModalBackdrop" class="profile-modal__backdrop" aria-hidden="true">
+    <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">My Profile</h2>
+        <p><strong>Name:</strong> <span id="pm_name">-</span></p>
+        <p><strong>Email:</strong> <span id="pm_email">-</span></p>
+        <p><strong>Phone:</strong> <span id="pm_phone">-</span></p>
+        <p><strong>Role:</strong> <span id="pm_role">-</span></p>
+
+        <div style="text-align:right;margin-top:12px">
+            <button id="closeProfileModal" class="btn-ghost" style="padding:8px 14px;border:1px solid #ccc;border-radius:8px;cursor:pointer;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* === Config === */
+    // client-side max upload size (bytes). Keep this in sync with server (spring.servlet.multipart.max-file-size)
+    const MAX_UPLOAD_BYTES = 2.5 * 1024 * 1024; // 2.5 MB
+
+    /* -------------------------
+       Mobile menu (shared)
+       ------------------------- */
+    (function(){
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileClose = document.getElementById('mobile-close');
+      const overlay = document.getElementById('overlay');
+
+      function openMenu(){
+        mobileMenu && mobileMenu.classList.add('open');
+        overlay && overlay.classList.add('show');
+        mobileMenu && mobileMenu.setAttribute('aria-hidden','false');
+        hamburger && hamburger.setAttribute('aria-expanded','true');
+        document.body.style.overflow = 'hidden';
+        const first = mobileMenu && mobileMenu.querySelector('.dash-btn');
+        if (first) first.focus();
+      }
+      function closeMenu(){
+        mobileMenu && mobileMenu.classList.remove('open');
+        overlay && overlay.classList.remove('show');
+        mobileMenu && mobileMenu.setAttribute('aria-hidden','true');
+        hamburger && hamburger.setAttribute('aria-expanded','false');
+        document.body.style.overflow = '';
+        hamburger && hamburger.focus();
+      }
+
+      if (hamburger && mobileMenu && overlay){
+        hamburger.addEventListener('click', () => { mobileMenu.classList.contains('open') ? closeMenu() : openMenu(); });
+        mobileClose && mobileClose.addEventListener('click', closeMenu);
+        overlay && overlay.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu(); });
+      }
+    })();
+
+    /* -------------------------
+       Profile menu + Logout
+       ------------------------- */
+    (function(){
+      const profileBtn = document.getElementById('profileBtn');
+      const profileMenu = document.getElementById('profileMenu');
+
+      function openProfile(){ if(profileMenu) profileMenu.style.display='block'; profileMenu && profileMenu.setAttribute('aria-hidden','false'); profileBtn && profileBtn.setAttribute('aria-expanded','true'); }
+      function closeProfile(){ if(profileMenu) profileMenu.style.display='none'; profileMenu && profileMenu.setAttribute('aria-hidden','true'); profileBtn && profileBtn.setAttribute('aria-expanded','false'); }
+
+      if (profileBtn){
+        profileBtn.addEventListener('click', () => { const open = profileBtn.getAttribute('aria-expanded') === 'true'; open ? closeProfile() : openProfile(); });
+        document.addEventListener('click', (e) => { if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) closeProfile(); });
+      }
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/logout'; });
+    })();
+// PROFILE modal logic (use class toggles)
+const viewProfile = document.getElementById("viewProfile");
+const modalBackdrop = document.getElementById("profileModalBackdrop");
+const closeProfileModal = document.getElementById("closeProfileModal");
+
+async function openProfileModalWithData() {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) return; // do nothing if not logged in
+    const user = await res.json();
+
+    document.getElementById("pm_name").textContent = user.fullName || user.name || '-';
+    document.getElementById("pm_email").textContent = user.email || user.username || '-';
+    document.getElementById("pm_phone").textContent = user.phoneNumber || user.phone || user.mobile || '-';
+    document.getElementById("pm_role").textContent = user.role || '-';
+
+    modalBackdrop.classList.add('show');
+    modalBackdrop.setAttribute('aria-hidden', 'false');
+  } catch (err) {
+    console.error('Failed to load profile', err);
+  }
+}
+
+function closeProfileModalFn() {
+  modalBackdrop.classList.remove('show');
+  modalBackdrop.setAttribute('aria-hidden', 'true');
+}
+
+// wiring
+if (viewProfile) {
+  viewProfile.addEventListener('click', function (e) {
+    e.preventDefault();
+    openProfileModalWithData();
+  });
+}
+if (closeProfileModal) closeProfileModal.addEventListener('click', closeProfileModalFn);
+
+// close when clicking on backdrop itself
+if (modalBackdrop) {
+  modalBackdrop.addEventListener('click', function (ev) {
+    if (ev.target === modalBackdrop) closeProfileModalFn();
+  });
+}
+
+    /* -------------------------
+       Fill profile initial (cookie-based auth)
+       ------------------------- */
+    (function(){
+      async function loadMe(){
+        try {
+          const res = await fetch('/api/auth/me', { credentials: 'include' });
+          if (!res.ok) return;
+          const j = await res.json();
+          const name = j.fullName || j.name || j.firstName || j.username || j.email || '';
+          const initial = (name && (name.trim().charAt(0).toUpperCase())) || 'A';
+          const btn = document.getElementById('profileBtn');
+          if (btn) btn.textContent = initial;
+        } catch (e){
+          console.warn('Could not fetch /api/auth/me', e);
+        }
+      }
+      loadMe();
+    })();
+
+    /* -------------------------
+       Upload preview + client-side size validation
+       - file input id: photo
+       - preview img id: photoPreviewAnimals
+       - upload text id: uploadTextAnimals
+       - error msg id: photoErr
+       ------------------------- */
+    (function(){
+      const photo = document.getElementById('photo');
+      const box = document.getElementById('uploadBoxAnimals');
+      const preview = document.getElementById('photoPreviewAnimals');
+      const ut = document.getElementById('uploadTextAnimals');
+      const perr = document.getElementById('photoErr');
+
+      if (box){
+        box.addEventListener('click', () => { photo && photo.click(); });
+        box.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); photo && photo.click(); } });
+      }
+
+      if (!photo) return;
+
+      photo.addEventListener('change', function(){
+        const f = this.files && this.files[0];
+        if (!f) {
+          perr && (perr.style.display='none');
+          return;
+        }
+
+        // size check
+        if (f.size > MAX_UPLOAD_BYTES) {
+          if (perr) {
+            perr.textContent = `File too large. Maximum allowed ${Math.round(MAX_UPLOAD_BYTES/1024/1024*100)/100} MB.`;
+            perr.style.display = 'block';
+          }
+          photo.classList.add('field-error');
+          if (preview) preview.style.display = 'none';
+          if (ut) ut.style.display = 'block';
+          return;
+        } else {
+          if (perr) { perr.style.display = 'none'; perr.textContent = ''; }
+          photo.classList.remove('field-error');
+        }
+
+        const r = new FileReader();
+        r.onload = function(e){
+          if (preview) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+          }
+          if (ut) ut.style.display = 'none';
+        };
+        r.readAsDataURL(f);
+      });
+    })();
+
+    /* -------------------------
+       Use location (supports both visible latField/lngField OR hidden lat/lng)
+       ------------------------- */
+    (function(){
+      const btn = document.getElementById('useLocation');
+      if (!btn) return;
+      btn.addEventListener('click', function(){
+        if (!navigator.geolocation){ alert('Geolocation not supported by your browser'); return; }
+        btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Detecting...';
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lon = pos.coords.longitude.toFixed(6);
+
+          // try visible fields first, then fallback to hidden IDs
+          const latField = document.getElementById('latField') || document.getElementById('lat');
+          const lngField = document.getElementById('lngField') || document.getElementById('lng');
+
+          if (latField) latField.value = lat;
+          if (lngField) lngField.value = lon;
+
+          btn.textContent = 'Location detected';
+          setTimeout(()=> { btn.textContent = orig; }, 1400);
+          btn.disabled = false;
+        }, (err) => {
+          alert('Unable to detect location — please allow location or enter address manually.');
+          btn.disabled = false; btn.textContent = orig;
+        }, { timeout:15000 });
+      });
+    })();
+
+    /* -------------------------
+       Datetime helpers (produce ISO datetimes like other pages)
+       ------------------------- */
+    function pad(n){ return n < 10 ? '0'+n : ''+n; }
+    function todayDate(){ const d=new Date(); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+    function buildISOFromTimeInput(timeStr){
+      if (!timeStr) return null;
+      // returns YYYY-MM-DDTHH:MM:00
+      return todayDate() + 'T' + (timeStr.length===5 ? timeStr : timeStr.slice(0,5)) + ':00';
+    }
+
+    /* -------------------------
+       Form validation & submit -> multipart to /api/donations
+       - form id: animalsForm
+       - thanks modal id: thanks ; close id: thanksClose
+       ------------------------- */
+    (function(){
+      const form = document.getElementById('animalsForm');
+      const thanks = document.getElementById('thanks');
+      const thanksClose = document.getElementById('thanksClose');
+
+      function showErr(el, msgId, msgText){
+        if (el) el.classList.add('field-error');
+        const m = document.getElementById(msgId);
+        if (m){ m.textContent = msgText; m.style.display = 'block'; }
+      }
+      function clearErr(el, msgId){
+        if (el) el && el.classList.remove('field-error');
+        const m = document.getElementById(msgId);
+        if (m) m.style.display = 'none';
+      }
+
+      if (thanksClose) thanksClose.addEventListener('click', () => { thanks.classList.remove('show'); thanks.setAttribute('aria-hidden','true'); document.body.style.overflow=''; });
+
+      if (!form) return;
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+
+        // clear previous errors
+        ['animalsErr','timeErr','locationErr','photoErr'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display='none'; });
+        document.querySelectorAll('.field-error').forEach(x => x.classList.remove('field-error'));
+
+        let invalid = false;
+
+        // required: animal_suitable_for
+        const animals = form.querySelector('input[name="animal_suitable_for"]') || form.querySelector('[name="animalSuitableFor"]');
+        if (!animals || !animals.value.trim()){
+          invalid = true;
+          showErr(animals, 'animalsErr', 'Please specify which animals this food is suitable for.');
+        } else {
+          clearErr(animals, 'animalsErr');
+        }
+
+        // times required
+        const from = form.querySelector('input[name="fromTime"]');
+        const to = form.querySelector('input[name="toTime"]');
+        if (!from || !from.value || !to || !to.value){
+          invalid = true;
+          showErr(from || to, 'timeErr', 'Please select both timings.');
+        } else {
+          clearErr(from || to, 'timeErr');
+        }
+
+        // pickup location required (pincode / street / district / state)
+        const pincode = form.querySelector('input[name="pin_code"]') || form.querySelector('[name="pincode"]');
+        const street = form.querySelector('input[name="street"]');
+        const district = form.querySelector('input[name="district"]');
+        const state = form.querySelector('input[name="state"]');
+
+        if (!pincode || !pincode.value || !street || !street.value || !district || !district.value || !state || !state.value){
+          invalid = true;
+          ['pin_code','pincode','street','district','state'].forEach(name => { const el = form.querySelector(`[name="${name}"]`); el && el.classList.add('field-error'); });
+          const locErr = document.getElementById('locationErr'); locErr && (locErr.style.display='block');
+        } else {
+          ['pin_code','pincode','street','district','state'].forEach(name => { const el = form.querySelector(`[name="${name}"]`); el && el.classList.remove('field-error'); });
+          document.getElementById('locationErr') && (document.getElementById('locationErr').style.display='none');
+        }
+
+        // photo required + client-side size validation
+        const photo = form.querySelector('input[name="photo"]');
+        if (!photo || !photo.files || !photo.files[0]){
+          invalid = true;
+          const perr = document.getElementById('photoErr'); perr && (perr.style.display='block');
+          photo && photo.classList.add('field-error');
+        } else {
+          const f = photo.files[0];
+          if (f.size > MAX_UPLOAD_BYTES){
+            invalid = true;
+            const perr = document.getElementById('photoErr');
+            if (perr) { perr.textContent = `File too large. Maximum allowed ${Math.round(MAX_UPLOAD_BYTES/1024/1024*100)/100} MB.`; perr.style.display='block'; }
+            photo && photo.classList.add('field-error');
+          } else {
+            photo && photo.classList.remove('field-error');
+            document.getElementById('photoErr') && (document.getElementById('photoErr').style.display='none');
+          }
+        }
+
+        // ensure lat/lng exist (useLocation is recommended)
+        const latField = document.getElementById('latField') || document.getElementById('lat');
+        const lngField = document.getElementById('lngField') || document.getElementById('lng');
+        if (!latField || !latField.value || !lngField || !lngField.value){
+          invalid = true;
+          if (latField) latField.classList.add('field-error');
+          if (lngField) lngField.classList.add('field-error');
+          const locErr = document.getElementById('locationErr');
+          if (locErr) { locErr.textContent = 'Please click "Use location" to detect latitude and longitude (recommended).'; locErr.style.display='block'; }
+        } else {
+          latField && latField.classList.remove('field-error');
+          lngField && lngField.classList.remove('field-error');
+        }
+
+        if (invalid){
+          const firstErr = document.querySelector('.field-error, .err-msg[style*="block"]');
+          firstErr && firstErr.scrollIntoView({behavior:'smooth', block:'center'});
+          return;
+        }
+
+        // Build FormData — include both DB keys and common controller-friendly keys for compatibility
+        const fd = new FormData();
+
+        // required type column
+        fd.append('type', 'ANIMAL');
+        fd.append('donationType', 'ANIMAL'); // alternative key some controllers use
+
+        // animal suitability/type
+        fd.append('animal_suitable_for', animals.value.trim());
+        fd.append('animalSuitableFor', animals.value.trim());
+
+        // animal_food_type (radio/hidden text)
+        const foodTypeField = form.querySelector('input[name="animal_food_type"]') || form.querySelector('[name="animalFoodType"]');
+        const foodTypeVal = (foodTypeField && foodTypeField.value) ? foodTypeField.value : '';
+        fd.append('animal_food_type', foodTypeVal);
+        fd.append('animalFoodType', foodTypeVal);
+
+        // available times as ISO (and also include plain time fields)
+        const available_from_iso = buildISOFromTimeInput(from.value);
+        const available_to_iso = buildISOFromTimeInput(to.value);
+        if (available_from_iso) { fd.append('available_from', available_from_iso); fd.append('availableFrom', available_from_iso); fd.append('fromTime', from.value); }
+        if (available_to_iso) { fd.append('available_to', available_to_iso); fd.append('availableTo', available_to_iso); fd.append('toTime', to.value); }
+
+        // location fields (include both variants)
+        const pinVal = (pincode && pincode.value) ? pincode.value : '';
+        fd.append('pin_code', pinVal);
+        fd.append('pincode', pinVal);
+
+        fd.append('street', (street && street.value) ? street.value : '');
+        fd.append('district', (district && district.value) ? district.value : '');
+        fd.append('state', (state && state.value) ? state.value : '');
+        fd.append('landmark', (form.querySelector('input[name="landmark"]')||{}).value || '');
+
+        // lat/lng
+        const lat = (latField && latField.value) ? latField.value : '';
+        const lng = (lngField && lngField.value) ? lngField.value : '';
+        if (lat) { fd.append('lat', lat); fd.append('latitude', lat); }
+        if (lng) { fd.append('lng', lng); fd.append('longitude', lng); }
+
+        // photo file
+        const file = photo.files[0];
+        if (file) fd.append('photo', file);
+
+        // UI lock
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const prevLabel = submitBtn ? submitBtn.textContent : null;
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+
+        try {
+          const res = await fetch('/api/donations', {
+            method: 'POST',
+            credentials: 'include',
+            body: fd
+          });
+
+          if (!res.ok){
+            let txt = 'Server error while submitting donation.';
+            try { const j = await res.json(); if (j && j.message) txt = j.message; } catch(e){}
+            alert('Error: ' + txt);
+            throw new Error(txt);
+          }
+
+          // success
+          try { const j = await res.json(); console.log('donation saved', j); } catch(e){ console.log('donation done'); }
+
+          if (thanks){
+            thanks.classList.add('show');
+            thanks.setAttribute('aria-hidden','false');
+            document.body.style.overflow='hidden';
+            const closeBtn = document.getElementById('thanksClose'); closeBtn && closeBtn.focus();
+          }
+
+          // reset UI (after short delay to allow modal open)
+          setTimeout(() => {
+            form.reset();
+            // hide preview
+            const prev = document.getElementById('photoPreviewAnimals');
+            if (prev) { prev.style.display = 'none'; prev.src = ''; const ut = document.getElementById('uploadTextAnimals'); if (ut) ut.style.display = 'block'; }
+            // clear any field-error classes
+            document.querySelectorAll('.field-error').forEach(x => x.classList.remove('field-error'));
+          }, 700);
+
+        } catch (err){
+          console.error(err);
+        } finally {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = prevLabel || 'Submit Donation'; }
+        }
+
+      });
+    })();
+</script>
+
+</body>
+</html>
