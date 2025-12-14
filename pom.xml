@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -18,15 +17,11 @@
     <name>kindora-backend</name>
     <description>Kindora backend</description>
 
-    <!-- ================= PROPERTIES ================= -->
     <properties>
         <java.version>17</java.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <lombok.version>1.18.32</lombok.version>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
 
-    <!-- ================= DEPENDENCIES ================= -->
     <dependencies>
 
         <!-- Web -->
@@ -47,10 +42,10 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- MySQL (runtime) -->
+        <!-- PostgreSQL -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
@@ -77,16 +72,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Devtools (local only) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- Tests -->
@@ -98,28 +84,9 @@
 
     </dependencies>
 
-    <!-- ================= BUILD ================= -->
     <build>
         <plugins>
 
-            <!-- Maven Compiler Plugin (Docker-safe) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-
-            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -129,4 +96,3 @@
     </build>
 
 </project>
-
