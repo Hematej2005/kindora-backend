@@ -71,8 +71,8 @@
         <!-- Cloudinary (REQUIRED for image upload) -->
         <dependency>
             <groupId>com.cloudinary</groupId>
-            <artifactId>cloudinary-http44</artifactId>
-            <version>1.37.0</version>
+            <artifactId>cloudinary</artifactId>
+            <version>1.38.0</version>
         </dependency>
 
         <!-- Lombok -->
