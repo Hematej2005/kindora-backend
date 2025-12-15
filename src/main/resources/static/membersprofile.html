@@ -97,7 +97,12 @@
             <div class="form-section">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <label class="section-label" style="margin:0;">Available locations <span class="req">*</span></label>
-                    <button type="button" id="useLocation" class="use-loc-btn" aria-label="Use my location">Use location</button>
+                    <button type="button" id="findLocation"
+                            class="dash-btn"
+                            style="padding:10px 12px;border-radius:12px;background:var(--teal);color:#fff;border:0">
+                        Find latitude & longitude
+                    </button>
+
                 </div>
 
                 <div class="locations" id="locations">
@@ -151,7 +156,11 @@
                 </div>
                 <div id="donErr" class="err-msg" style="display:none">Please select at least one donation type.</div>
             </div>
-
+            <div style="font-size:15px;color:#555;margin-top:12px;line-height:1.5">
+                <strong>Note:</strong> Please enter correct <b>Pincode, Street, District, State</b> and
+                <b>Landmark (if available)</b>.
+                Accurate location helps our volunteers reach you without delay.
+            </div>
             <div class="submit-wrap"><button type="submit" class="btn-submit">Save Profile</button></div>
         </form>
     </main>
@@ -340,29 +349,84 @@ if (modalBackdrop) {
       });
     })();
 
-    /***** geolocation for primary lat/lng (unchanged) *****/
-    (function(){
-      const btn = document.getElementById('useLocation');
-      if (!btn) return;
-      btn.addEventListener('click', function(){
-        if (!navigator.geolocation){ alert('Geolocation not supported by your browser.'); return; }
-        const orig = btn.textContent; btn.textContent = 'Detecting...'; btn.disabled = true;
-        navigator.geolocation.getCurrentPosition(pos=>{
-          const lat = pos.coords.latitude.toFixed(6), lon = pos.coords.longitude.toFixed(6);
-          const latInput = document.querySelector('#locations .location-group [name="lat"], #lat');
-          const lngInput = document.querySelector('#locations .location-group [name="lng"], #lng');
-          if (latInput) latInput.value = lat;
-          if (lngInput) lngInput.value = lon;
-          btn.textContent = 'Location detected';
-          setTimeout(()=>{ btn.textContent = orig; },1200);
-          btn.disabled = false;
-          const firstGroup = document.querySelector('#locations .location-group'); if (firstGroup) firstGroup.setAttribute('data-located','true');
-        }, err=>{
-          alert('Unable to detect location — please allow location permission or enter address manually.');
-          btn.textContent = orig; btn.disabled = false;
-        }, { timeout:15000 });
-      });
-    })();
+/* ---------- Address based geocoding with fallback (OpenStreetMap SAFE) ---------- */
+(function () {
+  const btn = document.getElementById('findLocation');
+  if (!btn) return;
+
+  btn.addEventListener('click', async function () {
+
+    const pincode  = document.querySelector('input[name="pincode"]').value.trim();
+    const street   = document.querySelector('input[name="street"]').value.trim();
+    const district = document.querySelector('input[name="district"]').value.trim();
+    const state    = document.querySelector('input[name="state"]').value.trim();
+    const landmark = document.querySelector('input[name="landmark"]').value.trim();
+
+    if (!pincode || !district || !state) {
+      alert("Please enter Pincode, District and State.");
+      return;
+    }
+
+    // 🔁 Address attempts (order matters)
+    const attempts = [];
+
+    if (street) {
+      let full = "";
+      if (landmark) full += landmark + ", ";
+      full += street + ", " + district + ", " + state + ", " + pincode + ", India";
+      attempts.push(full);
+    }
+
+    attempts.push(district + ", " + pincode + ", " + state + ", India");
+    attempts.push(district + ", " + state + ", India");
+
+    btn.disabled = true;
+    const orig = btn.textContent;
+    btn.textContent = "Finding location...";
+
+    try {
+      let found = false;
+
+      for (const address of attempts) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
+
+const res = await fetch(url, {
+  headers: {
+    "Accept": "application/json",
+    "User-Agent": "KindoraApp/1.0 (contact: akkanavenkatahematej@gmail.com)"
+  }
+});
+
+
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+          document.getElementById('lat').value = Number(data[0].lat).toFixed(6);
+          document.getElementById('lng').value = Number(data[0].lon).toFixed(6);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        alert(
+          "Location not found.\n\n" +
+          "Tip:\n" +
+          "• Use well-known area names\n" +
+          "• Avoid short/unknown landmarks\n" +
+          "• District + Pincode works best"
+        );
+      }
+
+    } catch (err) {
+      alert("Geocoding error. Please try again.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = orig;
+    }
+  });
+})();
+
 
     /***** add/remove time rows (unchanged) *****/
     (function(){
@@ -598,7 +662,7 @@ if (modalBackdrop) {
       if (!dto.times || dto.times.length === 0) return { ok:false, id:null, msg:'Please add at least one time slot.' };
       if (!dto.distance || !dto.distance.trim()) return { ok:false, id:'distance', msg:'Please enter maximum distance.' };
       if (!dto.types || dto.types.length === 0) return { ok:false, id:null, msg:'Please select at least one donation type.' };
-      if (dto.locations[0]) { if (!(dto.locations[0].lat && dto.locations[0].lng)) return { ok:false, id:null, msg:'Please click "Use location" to detect latitude & longitude for your primary location (required).' }; }
+      if (dto.locations[0]) { if (!(dto.locations[0].lat && dto.locations[0].lng)) return { ok:false, id:null, msg:'Please click "Find Latitude and Longitude " to detect latitude & longitude for your primary location (required).' }; }
       return { ok:true };
     }
 
