@@ -1,5 +1,7 @@
 package com.kindora.kindora_backend.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.kindora.kindora_backend.model.Donation;
 import com.kindora.kindora_backend.model.Member;
 import com.kindora.kindora_backend.model.MemberProofImage;
@@ -7,17 +9,11 @@ import com.kindora.kindora_backend.repository.DonationRepository;
 import com.kindora.kindora_backend.repository.MemberProofImageRepository;
 import com.kindora.kindora_backend.repository.MemberRepository;
 import com.kindora.kindora_backend.util.AuthUtil;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Map;
 
 @Service
 public class DonationUpdateService {
@@ -25,22 +21,20 @@ public class DonationUpdateService {
     private final DonationRepository donationRepository;
     private final MemberProofImageRepository memberProofImageRepository;
     private final MemberRepository memberRepository;
-
-    @Value("${kindora.upload-dir:uploads}")
-    private String uploadDir;
+    private final Cloudinary cloudinary;
 
     public DonationUpdateService(DonationRepository donationRepository,
                                  MemberProofImageRepository memberProofImageRepository,
-                                 MemberRepository memberRepository) {
+                                 MemberRepository memberRepository,
+                                 Cloudinary cloudinary) {
         this.donationRepository = donationRepository;
         this.memberProofImageRepository = memberProofImageRepository;
         this.memberRepository = memberRepository;
+        this.cloudinary = cloudinary;
     }
 
     /**
-     * Update donation status and optionally save a member proof image.
-     * IMPORTANT CHANGE:
-     *  - When status = AVAILABLE (reject), member profile is NOT required.
+     * Update donation status and optionally upload member proof image to Cloudinary.
      */
     @Transactional
     public Donation updateDonationStatusAndProof(Long donationId, String statusRaw, String proofBase64) throws Exception {
@@ -63,17 +57,14 @@ public class DonationUpdateService {
         // CASE 1 — UNASSIGN (AVAILABLE)
         // -----------------------------
         if ("AVAILABLE".equalsIgnoreCase(status)) {
-
             donation.setAssignedMemberId(null);
             donation.setAssignedAt(null);
             donation.setStatus("AVAILABLE");
-
             return donationRepository.save(donation);
         }
 
         // -----------------------------
         // CASE 2 — ALL OTHER STATUSES
-        // Member profile required
         // -----------------------------
         Member member = memberRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new IllegalStateException("Member profile required"));
@@ -93,42 +84,35 @@ public class DonationUpdateService {
         donation.setStatus(status);
 
         // -----------------------------
-        // PROOF IMAGE HANDLING
+        // PROOF IMAGE HANDLING (CLOUDINARY)
         // -----------------------------
         if (proofBase64 != null && !proofBase64.isBlank()) {
 
             String data = proofBase64;
-            if (data.startsWith("data:")) {
-                int comma = data.indexOf(',');
-                if (comma > 0) data = data.substring(comma + 1);
+            if (!data.startsWith("data:")) {
+                data = "data:image/jpeg;base64," + data;
             }
 
-            byte[] bytes = Base64.getDecoder().decode(data);
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(
+                    data,
+                    ObjectUtils.asMap(
+                            "folder", "kindora/member-proofs",
+                            "resource_type", "image"
+                    )
+            );
 
-            Path dir = Paths.get(uploadDir).toAbsolutePath().normalize();
-            if (!Files.exists(dir)) Files.createDirectories(dir);
-
-            String ext = ".jpg";
-            if (proofBase64.startsWith("data:image/png")) ext = ".png";
-            if (proofBase64.startsWith("data:image/webp")) ext = ".webp";
-            if (proofBase64.startsWith("data:image/gif")) ext = ".gif";
-
-            String filename = System.currentTimeMillis() + "_"
-                    + UUID.randomUUID().toString().substring(0, 8) + ext;
-
-            Path savedFile = dir.resolve(filename);
-            Files.write(savedFile, bytes);
-
-            String url = "/uploads/" + filename;
+            String imageUrl = uploadResult.get("secure_url").toString();
 
             MemberProofImage mpi = new MemberProofImage();
             mpi.setDonationId(donationId);
             mpi.setMemberId(member.getId());
-            mpi.setImageUrl(url);
+            mpi.setImageUrl(imageUrl);
             mpi.setUploadedAt(Instant.now());
+
             memberProofImageRepository.save(mpi);
         }
 
         return donationRepository.save(donation);
     }
 }
+
