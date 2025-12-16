@@ -689,10 +689,7 @@ const dto = {
 const fd = new FormData();
 fd.append('data', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
 
-// ✅ FIX: define photo HERE
-const photo = form.querySelector('input[name="photo"]');
-const file = photo && photo.files ? photo.files[0] : null;
-
+const file = photo.files[0];
 if (file) {
   fd.append('image', file);
 }
