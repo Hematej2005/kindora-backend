@@ -369,7 +369,7 @@ if (modalBackdrop) {
           renderList();
         }).catch(err => {
           console.warn('Could not accept donation', err);
-          alert('Could not accept on server — try again.');
+          alert('you could not accept Please register as member(Volunteer) through Member Dashboard');
           // rollback optimistic if preferred:
           nearbyList[idx]._accepted = false;
           renderList();
