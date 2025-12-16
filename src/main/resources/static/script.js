@@ -99,18 +99,26 @@ document.addEventListener("DOMContentLoaded", function () {
     profileDropdown.style.removeProperty('display');
   }
 
-  if (profileBtn) {
-    profileBtn.addEventListener("click", function (ev) {
-      ev.stopPropagation();
-      if (!profileDropdown) return;
-      const isOpen = profileDropdown.classList.contains('open');
-      profileDropdown.classList.toggle('open', !isOpen);
-      profileBtn.setAttribute('aria-expanded', String(!isOpen));
-      profileDropdown.setAttribute('aria-hidden', String(isOpen)); // when now open -> aria-hidden=false
-      // ensure no stuck inline style
-      profileDropdown.style.removeProperty('display');
-    });
-  }
+  // FIX: index.html dropdown issue caused by hero slider / transform context
+if (profileBtn) {
+  profileBtn.addEventListener("click", function (ev) {
+    ev.stopPropagation();
+    if (!profileDropdown) return;
+
+    const isOpen = profileDropdown.classList.contains('open');
+
+    // 🔥 IMPORTANT FIX — detach from hero slider layout
+    profileDropdown.style.position = 'fixed'; // instead of absolute
+    profileDropdown.style.top = '64px';        // below header
+    profileDropdown.style.right = '16px';
+    profileDropdown.style.zIndex = '99999';
+
+    profileDropdown.classList.toggle('open', !isOpen);
+    profileBtn.setAttribute('aria-expanded', String(!isOpen));
+    profileDropdown.setAttribute('aria-hidden', String(isOpen));
+  });
+}
+
 
   // global click to close
   document.addEventListener("click", function (e) {
