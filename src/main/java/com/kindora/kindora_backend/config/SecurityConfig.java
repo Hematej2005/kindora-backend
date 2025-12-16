@@ -44,9 +44,9 @@ public class SecurityConfig {
                         "/*.html",
                         "/*.css",
                         "/*.js",
-                        "/*.jpg"
-
-
+                        "/*.jpg",
+                        "/api/health"
+                    
                 ).permitAll()
 
                 // Everything else requires login
