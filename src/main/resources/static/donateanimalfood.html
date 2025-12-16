@@ -650,48 +650,38 @@ const res = await fetch(url, {
           return;
         }
 
-        // Build FormData — include both DB keys and common controller-friendly keys for compatibility
+        // Build FormData (MATCH BACKEND EXPECTATION)
+        const dto = {
+          type: 'ANIMAL',
+
+          animalSuitableFor: animals.value.trim(),
+          animalFoodType: foodTypeVal || null,
+
+          pinCode: pinVal,
+          state: state.value,
+          district: district.value,
+          street: street.value,
+          landmark: (form.querySelector('input[name="landmark"]') || {}).value || null,
+
+          availableFrom: buildISOFromTimeInput(from.value),
+          availableTo: buildISOFromTimeInput(to.value),
+
+          lat: lat ? Number(lat) : null,
+          lng: lng ? Number(lng) : null,
+          useGeolocation: !!lat
+        };
+
         const fd = new FormData();
 
-        // required type column
-        fd.append('type', 'ANIMAL');
-        fd.append('donationType', 'ANIMAL'); // alternative key some controllers use
+        // ✅ THIS IS REQUIRED
+        fd.append('data', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
 
-        // animal suitability/type
-        fd.append('animal_suitable_for', animals.value.trim());
-        fd.append('animalSuitableFor', animals.value.trim());
-
-        // animal_food_type (radio/hidden text)
-        const foodTypeField = form.querySelector('input[name="animal_food_type"]') || form.querySelector('[name="animalFoodType"]');
-        const foodTypeVal = (foodTypeField && foodTypeField.value) ? foodTypeField.value : '';
-        fd.append('animal_food_type', foodTypeVal);
-        fd.append('animalFoodType', foodTypeVal);
-
-        // available times as ISO (and also include plain time fields)
-        const available_from_iso = buildISOFromTimeInput(from.value);
-        const available_to_iso = buildISOFromTimeInput(to.value);
-        if (available_from_iso) { fd.append('available_from', available_from_iso); fd.append('availableFrom', available_from_iso); fd.append('fromTime', from.value); }
-        if (available_to_iso) { fd.append('available_to', available_to_iso); fd.append('availableTo', available_to_iso); fd.append('toTime', to.value); }
-
-        // location fields (include both variants)
-        const pinVal = (pincode && pincode.value) ? pincode.value : '';
-        fd.append('pin_code', pinVal);
-        fd.append('pincode', pinVal);
-
-        fd.append('street', (street && street.value) ? street.value : '');
-        fd.append('district', (district && district.value) ? district.value : '');
-        fd.append('state', (state && state.value) ? state.value : '');
-        fd.append('landmark', (form.querySelector('input[name="landmark"]')||{}).value || '');
-
-        // lat/lng
-        const lat = (latField && latField.value) ? latField.value : '';
-        const lng = (lngField && lngField.value) ? lngField.value : '';
-        if (lat) { fd.append('lat', lat); fd.append('latitude', lat); }
-        if (lng) { fd.append('lng', lng); fd.append('longitude', lng); }
-
-        // photo file
+        // ✅ IMAGE MUST BE NAMED "image"
         const file = photo.files[0];
-        if (file) fd.append('photo', file);
+        if (file) {
+          fd.append('image', file);
+        }
+
 
         // UI lock
         const submitBtn = form.querySelector('button[type="submit"]');
