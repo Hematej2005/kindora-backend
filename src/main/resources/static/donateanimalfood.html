@@ -630,57 +630,72 @@ const res = await fetch(url, {
           }
         }
 
-        // ensure lat/lng exist (useLocation is recommended)
-        const latField = document.getElementById('latField') || document.getElementById('lat');
-        const lngField = document.getElementById('lngField') || document.getElementById('lng');
-        if (!latField || !latField.value || !lngField || !lngField.value){
-          invalid = true;
-          if (latField) latField.classList.add('field-error');
-          if (lngField) lngField.classList.add('field-error');
-          const locErr = document.getElementById('locationErr');
-          if (locErr) { locErr.textContent = 'Please click "Find latitude & longitude" to detect location (mandatory).'; locErr.style.display='block'; }
-        } else {
-          latField && latField.classList.remove('field-error');
-          lngField && lngField.classList.remove('field-error');
-        }
+        // ensure lat/lng exist
+const latField = document.getElementById('latField') || document.getElementById('lat');
+const lngField = document.getElementById('lngField') || document.getElementById('lng');
 
-        if (invalid){
-          const firstErr = document.querySelector('.field-error, .err-msg[style*="block"]');
-          firstErr && firstErr.scrollIntoView({behavior:'smooth', block:'center'});
-          return;
-        }
+if (!latField || !latField.value || !lngField || !lngField.value) {
+  invalid = true;
+  if (latField) latField.classList.add('field-error');
+  if (lngField) lngField.classList.add('field-error');
+  const locErr = document.getElementById('locationErr');
+  if (locErr) {
+    locErr.textContent = 'Please click "Find latitude & longitude" to detect location (mandatory).';
+    locErr.style.display = 'block';
+  }
+} else {
+  latField.classList.remove('field-error');
+  lngField.classList.remove('field-error');
+}
 
-        // Build FormData (MATCH BACKEND EXPECTATION)
-        const dto = {
-          type: 'ANIMAL',
+if (invalid) {
+  const firstErr = document.querySelector('.field-error, .err-msg[style*="block"]');
+  firstErr && firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return;
+}
 
-          animalSuitableFor: animals.value.trim(),
-          animalFoodType: foodTypeVal || null,
+// ---- REQUIRED VALUE EXTRACTION ----
+const foodTypeField =
+  form.querySelector('input[name="animal_food_type"]') ||
+  form.querySelector('[name="animalFoodType"]');
 
-          pinCode: pinVal,
-          state: state.value,
-          district: district.value,
-          street: street.value,
-          landmark: (form.querySelector('input[name="landmark"]') || {}).value || null,
+const foodTypeVal = foodTypeField ? foodTypeField.value.trim() : '';
+const pinVal = pincode.value.trim();
+const lat = latField.value;
+const lng = lngField.value;
 
-          availableFrom: buildISOFromTimeInput(from.value),
-          availableTo: buildISOFromTimeInput(to.value),
+// ---- DTO ----
+const dto = {
+  type: 'ANIMAL',
 
-          lat: lat ? Number(lat) : null,
-          lng: lng ? Number(lng) : null,
-          useGeolocation: !!lat
-        };
+  animalSuitableFor: animals.value.trim(),
+  animalFoodType: foodTypeVal || null,
 
-        const fd = new FormData();
+  pinCode: pinVal,
+  state: state.value,
+  district: district.value,
+  street: street.value,
+  landmark: (form.querySelector('input[name="landmark"]') || {}).value || null,
 
-        // ✅ THIS IS REQUIRED
-        fd.append('data', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+  availableFrom: buildISOFromTimeInput(from.value),
+  availableTo: buildISOFromTimeInput(to.value),
 
-        // ✅ IMAGE MUST BE NAMED "image"
-        const file = photo.files[0];
-        if (file) {
-          fd.append('image', file);
-        }
+  lat: Number(lat),
+  lng: Number(lng),
+  useGeolocation: true
+};
+
+// ---- FormData ----
+const fd = new FormData();
+fd.append('data', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+// ✅ FIX: define photo HERE
+const photo = form.querySelector('input[name="photo"]');
+const file = photo && photo.files ? photo.files[0] : null;
+
+if (file) {
+  fd.append('image', file);
+}
 
 
         // UI lock
