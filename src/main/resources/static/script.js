@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (loginBtn) { loginBtn.style.display = ""; loginBtn.classList.remove('hidden'); }
 
       // intercept protected elements
-      document.querySelectorAll(".btn-donate, .dash-btn, .nav-link, .btn-primary").forEach(el => {
+      document.querySelectorAll(".btn-donate, .dash-btn, .btn-primary").forEach(el => {
         if (el.dataset._protectAttached) return;
         el.dataset._protectAttached = "1";
         el.addEventListener("click", function (ev) {
