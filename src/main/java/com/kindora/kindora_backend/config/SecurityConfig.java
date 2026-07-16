@@ -1,4 +1,5 @@
 package com.kindora.kindora_backend.config;
+import org.springframework.security.config.Customizer;
 
 import com.kindora.kindora_backend.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable);
-
+        http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests(auth -> auth
                 // Public pages & static files
                 .requestMatchers(
