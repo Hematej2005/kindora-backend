@@ -8,6 +8,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+
 @Configuration
 public class CorsConfig {
 
@@ -19,7 +20,10 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         config.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of(
+                        "http://localhost:5173",
+                        "https://hematej-kindora.vercel.app"
+                )
         );
 
         config.setAllowedHeaders(List.of("*"));
@@ -33,7 +37,6 @@ public class CorsConfig {
                         "OPTIONS"
                 )
         );
-
 
         config.setExposedHeaders(List.of("Set-Cookie"));
 
