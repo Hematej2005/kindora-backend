@@ -45,7 +45,8 @@ public class AuthController {
         sb.append("; Max-Age=").append(maxAgeSeconds);
         sb.append("; HttpOnly");
         // For local dev keep Secure off. In production (https) set Secure and consider SameSite=None if cross-site.
-        sb.append("; SameSite=Lax");
+        sb.append("; Secure");
+        sb.append("; SameSite=None");
         res.addHeader("Set-Cookie", sb.toString());
     }
 
