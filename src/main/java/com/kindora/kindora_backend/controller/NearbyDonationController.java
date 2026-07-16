@@ -96,7 +96,43 @@ public class NearbyDonationController {
         for (Donation d : found) {
             out.add(donationToMap(d, false));
         }
+        // ----------------------------------------------------
+// Fill remaining donations if nearby results are less
+// than requested limit
+// ----------------------------------------------------
 
+        if (found.size() < lim) {
+
+            List<Donation> availableDonations =
+                    donationRepository.findByStatusOrderByCreatedAtDesc("AVAILABLE");
+
+            Set<Long> existingIds = found.stream()
+                    .map(Donation::getId)
+                    .collect(Collectors.toSet());
+
+            for (Donation donation : availableDonations) {
+
+                if (existingIds.contains(donation.getId())) {
+
+                    continue;
+
+                }
+
+                found.add(donation);
+
+                out.add(donationToMap(donation, false));
+
+                existingIds.add(donation.getId());
+
+                if (found.size() >= lim) {
+
+                    break;
+
+                }
+
+            }
+
+        }
         // If we have lat/lng, compute distances server-side and sort
         if (lat != null && lng != null) {
             final double qLat = lat;
@@ -177,3 +213,4 @@ public class NearbyDonationController {
         return m;
     }
 }
+
