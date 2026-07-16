@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ public class DonationUpdateController {
             Long userId;
             try {
                 userId = AuthUtil.getLoggedUserId();
+                System.out.println("Logged User ID = " + userId);
             } catch (Exception ex) {
                 return ResponseEntity.status(401).body(Map.of("error", "Unauthenticated"));
             }
@@ -59,6 +61,7 @@ public class DonationUpdateController {
             // If status is AVAILABLE (unassign), allow even if the user doesn't have a Member record.
             // For all other operations require a member profile.
             Optional<Member> maybeMember = memberRepository.findByUser_Id(userId);
+            System.out.println("Member Found = " + maybeMember.isPresent());
             if (maybeMember.isEmpty()) {
                 if (status == null || !"AVAILABLE".equalsIgnoreCase(status.trim())) {
                     return ResponseEntity.status(403).body(Map.of("error", "Member profile required"));
@@ -71,11 +74,15 @@ public class DonationUpdateController {
             // fetch latest member proof for this donation (if any)
             MemberProofImage mpi = memberProofImageRepository.findTopByDonationIdOrderByUploadedAtDesc(id);
 
-            return ResponseEntity.ok(Map.of(
-                    "status", "OK",
-                    "donation", updated,
-                    "memberProof", mpi
-            ));
+            Map<String, Object> response = new HashMap<>();
+
+            response.put("status", "OK");
+
+            response.put("donation", updated);
+
+            response.put("memberProof", mpi);
+
+            return ResponseEntity.ok(response);
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
         } catch (Exception ex) {
@@ -84,3 +91,4 @@ public class DonationUpdateController {
         }
     }
 }
+
